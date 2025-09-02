@@ -1,0 +1,57 @@
+﻿@model Models.Review
+
+@{
+    ViewData["Title"] = "Edit Review";
+    var users = ViewData["Users"] as List<Models.ApplicationUser>;
+    var trips = ViewData["Trips"] as List<Models.Trip>;
+    var hotels = ViewData["Hotels"] as List<Models.Hotel>;
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">✏️ Edit Review</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post" class="row g-3">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="col-md-6">
+                    <label class="form-label">User</label>
+                    <select asp-for="UserId" class="form-select" asp-items="@(new SelectList(users, "Id", "UserName", Model.UserId))">
+                        <option value="">-- Select User --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Trip</label>
+                    <select asp-for="TripId" class="form-select" asp-items="@(new SelectList(trips, "Id", "Title", Model.TripId))">
+                        <option value="">-- Select Trip --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Hotel</label>
+                    <select asp-for="HotelId" class="form-select" asp-items="@(new SelectList(hotels, "Id", "Name", Model.HotelId))">
+                        <option value="">-- Select Hotel --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Rating</label>
+                    <input asp-for="Rating" type="number" min="1" max="5" class="form-control" />
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label">Comment</label>
+                    <textarea asp-for="Comment" class="form-control"></textarea>
+                </div>
+
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">Update</button>
+                    <a asp-action="Index" class="btn btn-secondary px-4">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

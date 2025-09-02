@@ -40,6 +40,7 @@ namespace Models
         public int? HotelId { get; set; }
         [JsonIgnore]
         public Hotel? Hotel { get; set; }
+        public int NumberOfTickets { get; set; }
         public ICollection<Passenger> Passengers { get; set; } = new List<Passenger>();
     }
 }

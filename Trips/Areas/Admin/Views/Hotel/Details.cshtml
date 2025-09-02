@@ -1,0 +1,26 @@
+﻿@model Models.Hotel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Hotel Details";
+}
+
+<div class="container mx-auto px-6 py-12">
+    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Hotel Details</h2>
+
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
+        <p><strong>Name:</strong> @Model.Name</p>
+        <p><strong>City:</strong> @Model.City</p>
+        <p><strong>Country:</strong> @Model.Country?.Name</p>
+        <p><strong>Trip:</strong> @Model.Trip?.Title</p>
+        <p><strong>Price/Night:</strong> @Model.PricePerNight.ToString("C")</p>
+        <p><strong>Available Rooms:</strong> @Model.AvailableRooms</p>
+        <p><strong>Phone:</strong> @Model.Phone</p>
+        <p><strong>Description:</strong> @Model.Description</p>
+    </div>
+
+    <div class="mt-6">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600">Edit</a>
+        <a asp-action="Index" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600">Back to List</a>
+    </div>
+</div>

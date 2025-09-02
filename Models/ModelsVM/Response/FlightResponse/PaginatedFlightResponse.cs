@@ -1,4 +1,4 @@
-﻿namespace Models.DTOs.Response.HotelResponse
+﻿namespace Models.ModelsVM.Response.HotelResponse
 {
     public class PaginatedFlightResponse
     {

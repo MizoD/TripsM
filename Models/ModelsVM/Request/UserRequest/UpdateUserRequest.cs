@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.DTOs.Request.UserRequest
+namespace Models.ModelsVM.Request.UserRequest
 {
     public class UpdateUserRequest
     {

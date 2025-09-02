@@ -1,4 +1,4 @@
-﻿namespace Models.DTOs.Request.HotelRequest
+﻿namespace Models.ModelsVM.Request.HotelRequest
 {
     public class FlightSearchRequest
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.DTOs.Request.UserReviewRequest
+namespace Models.ModelsVM.Request.UserReviewRequest
 {
     public class CreateUserReviewRequest
     {

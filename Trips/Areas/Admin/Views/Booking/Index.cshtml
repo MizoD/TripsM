@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Models.Booking>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Bookings";
+}
+
+<div class="container mx-auto px-6 py-12">
+    <!-- Header -->
+    <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-800 dark:text-white">Bookings Management</h2>
+        <p class="text-gray-600 dark:text-gray-400 mt-2">View, edit, and manage all bookings in one place.</p>
+    </div>
+
+    <!-- Table Card -->
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">User</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Trip</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Hotel</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Flight</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Total</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Tickets</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700 dark:text-gray-200">Payment</th>
+                    <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-200">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                @foreach (var item in Model)
+                {
+                    <tr class="hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                        <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200">@item.User?.UserName</td>
+                        <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200">@((item.Trip?.Title) ?? "-")</td>
+                        <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200">@((item.Hotel?.Name) ?? "-")</td>
+                        <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200">@((item.Flight?.Title) ?? "-")</td>
+                        <td class="px-6 py-4 text-sm text-green-600 dark:text-green-400 font-semibold">
+                            @item.TotalAmount.ToString("C")
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-200">@item.NumberOfTickets</td>
+                        <td class="px-6 py-4 text-sm">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                    @(item.PaymentMethod == Models.PaymentMethod.CASHONSITE
+                                                                    ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-700 dark:text-yellow-200"
+                                                                    : "bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-200")">
+                            @item.PaymentMethod
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm flex gap-2 justify-center">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="px-3 py-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="px-3 py-1 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 transition">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="px-3 py-1 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">Delete</a>
+                    </td>
+                </tr>
+                                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Booking -->
+    <div class="text-center mt-8">
+        <a asp-action="Create" class="inline-block bg-green-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-green-700 transition">
+            + Create New Booking
+        </a>
+    </div>
+</div>

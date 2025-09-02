@@ -1,0 +1,68 @@
+﻿@model Models.Hotel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Edit Hotel";
+}
+
+<div class="container mx-auto px-6 py-12">
+    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Edit Hotel</h2>
+
+    <form asp-action="Edit" method="post" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg space-y-6">
+        <input type="hidden" asp-for="Id" />
+
+        <div>
+            <label asp-for="Name" class="block text-gray-700 dark:text-gray-300">Name</label>
+            <input asp-for="Name" class="w-full border p-3 rounded-lg" />
+            <span asp-validation-for="Name" class="text-red-500"></span>
+        </div>
+
+        <div>
+            <label asp-for="Description" class="block text-gray-700 dark:text-gray-300">Description</label>
+            <textarea asp-for="Description" class="w-full border p-3 rounded-lg"></textarea>
+            <span asp-validation-for="Description" class="text-red-500"></span>
+        </div>
+
+        <div>
+            <label asp-for="Phone" class="block text-gray-700 dark:text-gray-300">Phone</label>
+            <input asp-for="Phone" class="w-full border p-3 rounded-lg" />
+            <span asp-validation-for="Phone" class="text-red-500"></span>
+        </div>
+
+        <div>
+            <label asp-for="AvilableRooms" class="block text-gray-700 dark:text-gray-300">Available Rooms</label>
+            <input asp-for="AvilableRooms" type="number" class="w-full border p-3 rounded-lg" />
+        </div>
+
+        <div>
+            <label asp-for="PricePerNight" class="block text-gray-700 dark:text-gray-300">Price/Night</label>
+            <input asp-for="PricePerNight" type="number" step="0.01" class="w-full border p-3 rounded-lg" />
+        </div>
+
+        <div>
+            <label asp-for="City" class="block text-gray-700 dark:text-gray-300">City</label>
+            <input asp-for="City" class="w-full border p-3 rounded-lg" />
+        </div>
+
+        <div>
+            <label class="block text-gray-700 dark:text-gray-300">Country</label>
+            <select asp-for="CountryId" class="w-full border p-3 rounded-lg"
+                    asp-items="@(new SelectList(ViewData["Countries"] as List<Models.Country>, "Id", "Name", Model.CountryId))">
+                <option value="">-- Select Country --</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block text-gray-700 dark:text-gray-300">Trip</label>
+            <select asp-for="TripId" class="w-full border p-3 rounded-lg"
+                    asp-items="@(new SelectList(ViewData["Trips"] as List<Models.Trip>, "Id", "Title", Model.TripId))">
+                <option value="">-- Select Trip --</option>
+            </select>
+        </div>
+
+        <div class="flex gap-4">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">Update</button>
+            <a asp-action="Index" class="bg-gray-500 text-wh ite px-6 py-3 rounded-lg hover:bg-gray-600">Cancel</a>
+        </div>
+    </form>
+</div>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.DTOs.Response.UserReviewResponse
+namespace Models.ModelsVM.Response.UserReviewResponse
 {
     public class PagedUserReviewResponse
     {

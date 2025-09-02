@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Models.DTOs.Request.HotelRequest
+namespace Models.ModelsVM.Request.HotelRequest
 {
     public class UpdateHotelRequest
     {

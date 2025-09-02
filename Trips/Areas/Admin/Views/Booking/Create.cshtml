@@ -1,0 +1,54 @@
+﻿@model Models.Booking
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Create Booking";
+}
+
+<div class="container mx-auto px-6 py-12">
+    <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Create New Booking</h2>
+
+    <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+        <form asp-action="Create" method="post" class="space-y-6">
+            <div>
+                <label asp-for="UserId" class="block text-gray-700 dark:text-gray-200 mb-2">User</label>
+                <select asp-for="UserId" asp-items="ViewBag.Users" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600"></select>
+            </div>
+
+            <div>
+                <label asp-for="TripId" class="block text-gray-700 dark:text-gray-200 mb-2">Trip</label>
+                <select asp-for="TripId" asp-items="ViewBag.Trips" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600"></select>
+            </div>
+
+            <div>
+                <label asp-for="HotelId" class="block text-gray-700 dark:text-gray-200 mb-2">Hotel</label>
+                <select asp-for="HotelId" asp-items="ViewBag.Hotels" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600"></select>
+            </div>
+
+            <div>
+                <label asp-for="FlightId" class="block text-gray-700 dark:text-gray-200 mb-2">Flight</label>
+                <select asp-for="FlightId" asp-items="ViewBag.Flights" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600"></select>
+            </div>
+
+            <div>
+                <label asp-for="NumberOfTickets" class="block text-gray-700 dark:text-gray-200 mb-2">Tickets</label>
+                <input asp-for="NumberOfTickets" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600" />
+            </div>
+
+            <div>
+                <label asp-for="TotalAmount" class="block text-gray-700 dark:text-gray-200 mb-2">Total</label>
+                <input asp-for="TotalAmount" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600" />
+            </div>
+
+            <div>
+                <label asp-for="PaymentMethod" class="block text-gray-700 dark:text-gray-200 mb-2">Payment Method</label>
+                <select asp-for="PaymentMethod" asp-items="Html.GetEnumSelectList<Models.PaymentMethod>()" class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600"></select>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">Create Booking</button>
+                <a asp-action="Index" class="ml-4 px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

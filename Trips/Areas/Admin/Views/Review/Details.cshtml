@@ -1,0 +1,25 @@
+﻿@model Models.Review
+
+@{
+    ViewData["Title"] = "Review Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">📄 Review Details</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>User:</strong> @Model.User?.UserName</p>
+            <p><strong>Trip:</strong> <span class="badge bg-primary">@Model.Trip?.Title</span></p>
+            <p><strong>Hotel:</strong> <span class="badge bg-secondary">@Model.Hotel?.Name</span></p>
+            <p><strong>Rating:</strong> <span class="badge bg-warning text-dark">@Model.Rating ★</span></p>
+            <p><strong>Comment:</strong> @Model.Comment</p>
+            <p><strong>Created At:</strong> @Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</p>
+        </div>
+        <div class="card-footer d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">✏️ Edit</a>
+            <a asp-action="Index" class="btn btn-secondary">⬅ Back</a>
+        </div>
+    </div>
+</div>

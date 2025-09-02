@@ -1,4 +1,4 @@
-﻿namespace Models.DTOs.Request.TripRequest
+﻿namespace Models.ModelsVM.Request.TripRequest
 {
     public class TripSearchRequest
     {

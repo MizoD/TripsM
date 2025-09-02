@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.DTOs.Response.TripResponse
+namespace Models.ModelsVM.Response.TripResponse
 {
     public class ReviewResponse
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.DTOs.Request.TripRequest
+namespace Models.ModelsVM.Request.TripRequest
 {
     public class AddReviewRequest
     {

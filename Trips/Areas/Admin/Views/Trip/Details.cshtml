@@ -1,0 +1,35 @@
+﻿@model Models.Trip
+
+@{
+    ViewData["Title"] = "Trip Details";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">ℹ️ Trip Details</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Title</dt>
+                <dd class="col-sm-9">@Model.Title</dd>
+
+                <dt class="col-sm-3">Hotel</dt>
+                <dd class="col-sm-9">@Model.Hotel?.Name</dd>
+
+                <dt class="col-sm-3">Start Date</dt>
+                <dd class="col-sm-9">@Model.StartDate.ToShortDateString()</dd>
+
+                <dt class="col-sm-3">End Date</dt>
+                <dd class="col-sm-9">@Model.EndDate.ToShortDateString()</dd>
+
+                <dt class="col-sm-3">Price</dt>
+                <dd class="col-sm-9">@Model.Price</dd>
+
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">@Model.Description</dd>
+            </dl>
+            <a asp-action="Index" class="btn btn-secondary">⬅ Back</a>
+        </div>
+    </div>
+</div>

@@ -12,8 +12,10 @@ namespace Models
         [JsonIgnore]
         public ApplicationUser User { get; set; } = null!;
         public int TripId { get; set; }
+        public int HotelId { get; set; }
         [JsonIgnore]
         public Trip Trip { get; set; } = null!;
+        public Hotel Hotel { get; set; } = null!;
 
         [Required, Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
         public int Rating { get; set; }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace Models.DTOs.Request
+namespace Models.ModelsVM.Request
 {
     public class EditProfileRequest
     {

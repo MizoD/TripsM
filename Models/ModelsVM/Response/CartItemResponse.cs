@@ -1,4 +1,4 @@
-﻿namespace Models.DTOs.Response
+﻿namespace Models.ModelsVM.Response
 {
     public class CartItemResponse
     {

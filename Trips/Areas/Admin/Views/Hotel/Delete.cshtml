@@ -1,0 +1,23 @@
+﻿@model Models.Hotel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Delete Hotel";
+}
+
+<div class="container mx-auto px-6 py-12">
+    <h2 class="text-3xl font-bold text-red-600 mb-6">Delete Hotel</h2>
+
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
+        <p>Are you sure you want to delete this hotel?</p>
+        <p><strong>Name:</strong> @Model.Name</p>
+        <p><strong>City:</strong> @Model.City</p>
+        <p><strong>Country:</strong> @Model.Country?.Name</p>
+    </div>
+
+    <form asp-action="Delete" method="post" class="mt-6">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700">Delete</button>
+        <a asp-action="Index" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600">Cancel</a>
+    </form>
+</div>

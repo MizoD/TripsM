@@ -50,6 +50,8 @@ namespace Models
         public ICollection<string>? SecondryImages { get; set; }
         public string? VideoUrl { get; set; } = string.Empty;
         public decimal Rate { get; set; }
+        public Hotel Hotel { get; set; } = null!;
+        public int HotelId { get; set; }
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
         public ICollection<Flight> Flights { get; set; } = new List<Flight>();
