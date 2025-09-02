@@ -1,31 +1,50 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.hero-section {
+    background-image: url('/images/wa.jpg');
+    background-size: cover;
+    background-position: center;
+}
+/* Style for the modal transitions */
+.modal-content {
+    transition: transform 0.3s ease-out;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.modal.hidden .modal-content {
+    transform: scale(0.95);
 }
+
+.modal {
+    transition: opacity 0.3s ease;
+}
+.cd-words-wrapper b {
+    font-weight: 700;
+}
+h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.cd-words-wrapper {
+    display: inline-block;
+    position: relative;
+    height: 1em;
+    overflow: hidden;
+    vertical-align: top;
+}
+
+    .cd-words-wrapper b {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        transition: opacity 0.7s ease;
+    }
+
+        .cd-words-wrapper b.is-visible {
+            opacity: 1;
+            position: relative;
+        }

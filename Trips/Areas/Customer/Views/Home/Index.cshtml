@@ -1,0 +1,115 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Home";
+}
+
+<div class="container">
+    <!-- Hero Section -->
+    <section id="home" class="hero-section text-white h-[60vh] flex flex-col items-center justify-center text-center p-4">
+        <div class="bg-black/40 p-8 rounded-xl">
+
+            <h1 class="text-4xl md:text-6xl font-bold mb-4">Discover Your Next Adventure</h1>
+            <h2 class="sec__title">
+                Amazing
+                <span class="cd-words-wrapper">
+                    <b class="is-visible font-bold">Tours</b>
+                    <b>Adventures</b>
+                    <b>Flights</b>
+                    <b>Hotels</b>
+                    <b>Package Deals</b>
+                    <b>Fun</b>
+                    <b>People</b>
+                </span>
+                Waiting for You
+            </h2>
+        </div>
+        <p class="text-lg md:text-xl max-w-2xl">Book flights, find packages, and explore the world with us.</p>
+    </section>
+
+    <!-- Flight Search Section -->
+    <section id="flights" class="container mx-auto px-6 py-12 -mt-20 relative">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Search for Flights <i class="fas fa-search ml-2"></i></h2>
+            <form class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+                <div class="space-y-2">
+                    <label for="from" class="block font-medium text-gray-700">From</label>
+                    <input type="text" id="from" placeholder="e.g., New York (JFK)" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div class="space-y-2">
+                    <label for="to" class="block font-medium text-gray-700 dark">To</label>
+                    <input type="text" id="to" placeholder="e.g., Paris (CDG)" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div class="space-y-2">
+                    <label for="departure" class="block font-medium text-gray-700 dark">Departure</label>
+                    <input type="date" id="departure" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div class="space-y-2">
+                    <label for="return" class="block font-medium text-gray-700 dark">Return</label>
+                    <input type="date" id="return" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 col-span-1 md:col-span-2 lg:col-span-1">
+                    Search
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Top Destinations Section -->
+    <section id="destinations" class="py-12">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Top Destinations</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Cards will be dynamically inserted here if needed, or static like below -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
+                    <img src="https://placehold.co/600x400/3498db/FFFFFF?text=Paris" alt="Paris" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Paris, France</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">The city of love, lights, and art.</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
+                    <img src="httpshttps://placehold.co/600x400/e74c3c/FFFFFF?text=Rome" alt="Rome" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Rome, Italy</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">Explore ancient history and savor amazing pasta.</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
+                    <img src="https://placehold.co/600x400/2ecc71/FFFFFF?text=Tokyo" alt="Tokyo" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Tokyo, Japan</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">A vibrant mix of tradition and futuristic technology.</p>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
+                    <img src="https://placehold.co/600x400/f1c40f/FFFFFF?text=Sydney" alt="Sydney" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Sydney, Australia</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mt-2">Famous for its harbourfront opera house.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-12 bg-gray-100 dark:bg-black/20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Contact Us</h2>
+            <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
+                <form>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <input type="text" placeholder="Your Name" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                        <input type="email" placeholder="Your Email" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                    </div>
+                    <textarea rows="5" placeholder="How can we help you?" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition mb-6"></textarea>
+                    <div class="text-center">
+                        <button type="submit" class="bg-blue-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                            Send Message
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
