@@ -15,9 +15,12 @@ namespace Models
         public AirCraftStatus Status { get; set; }
         public string AirlineName { get; set; } = string.Empty;
         public AirCraftType Type { get; set; }
+
+        [Required]
+        public decimal InitialPrice { get; set; }
+
         public int AirportId { get; set; }
         [JsonIgnore]
         public Airport Airport { get; set; } = null!;
-        public List<Seat> Seats { get; set; } = new List<Seat>();
     }
 }

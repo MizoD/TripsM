@@ -20,6 +20,9 @@ namespace Models
         public decimal PricePerNight { get; set; }
         [Required]
         public string City { get; set; } = null!;
+        [Required]
+        [Url]
+        public string MainImg { get; set; } = null!;
         public int Traffic { get; set; }
         [Required]
         public int CountryId { get; set; }
@@ -28,6 +31,7 @@ namespace Models
         public int? TripId { get; set; }
         [JsonIgnore]
         public Trip? Trip { get; set; }
+        public ICollection<HotelImage> HotelImages { get; set; } = new List<HotelImage>();
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

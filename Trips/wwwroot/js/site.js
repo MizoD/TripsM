@@ -156,3 +156,127 @@ setInterval(() => {
     current = (current + 1) % words.length;
     words[current].classList.add("is-visible");
 }, 2000);
+
+
+const slider = document.getElementById("hotelSlider");
+const next = document.getElementById("nextHotel");
+const prev = document.getElementById("prevHotel");
+
+let scrollAmount = 320; // each card width + gap
+
+next.addEventListener("click", () => {
+    slider.scrollBy({ left: scrollAmount, behavior: "smooth" });
+});
+
+prev.addEventListener("click", () => {
+    slider.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+});
+
+const loginModal = document.getElementById("login-modal");
+const openLoginBtn = document.getElementById("open-login-modal");
+const closeLoginBtn = document.getElementById("close-login-modal");
+
+openLoginBtn?.addEventListener("click", () => loginModal.classList.remove("hidden"));
+closeLoginBtn?.addEventListener("click", () => loginModal.classList.add("hidden"));
+
+// Register Modal
+const registerModal = document.getElementById("register-modal");
+const openRegisterBtn = document.getElementById("open-register-modal");
+const closeRegisterBtn = document.getElementById("close-register-modal");
+
+openRegisterBtn?.addEventListener("click", () => registerModal.classList.remove("hidden"));
+closeRegisterBtn?.addEventListener("click", () => registerModal.classList.add("hidden"));
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove("hidden");
+    setTimeout(() => {
+        modal.querySelector(".modal-content").classList.remove("scale-95", "opacity-0");
+        modal.querySelector(".modal-content").classList.add("scale-100", "opacity-100");
+    }, 10);
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.querySelector(".modal-content").classList.add("scale-95", "opacity-0");
+    modal.querySelector(".modal-content").classList.remove("scale-100", "opacity-100");
+    setTimeout(() => modal.classList.add("hidden"), 300);
+}
+
+// Open buttons
+document.getElementById("open-login-modal").addEventListener("click", () => openModal("login-modal"));
+document.getElementById("open-register-modal").addEventListener("click", () => openModal("register-modal"));
+
+// Close buttons
+document.getElementById("close-login-modal").addEventListener("click", () => closeModal("login-modal"));
+document.getElementById("close-register-modal").addEventListener("click", () => closeModal("register-modal"));
+
+// Close modal when clicking outside
+document.querySelectorAll(".modal").forEach(modal => {
+    modal.addEventListener("click", e => {
+        if (e.target === modal) closeModal(modal.id);
+    });
+});
+
+// Tab switching logic
+const roundTripTab = document.getElementById('round-trip-tab');
+const oneWayTab = document.getElementById('one-way-tab');
+const roundTripSection = document.getElementById('round-trip-section');
+const oneWaySection = document.getElementById('one-way-section');
+const breadcrumbText = document.getElementById('breadcrumb-text');
+function switchTab(tripType) {
+    if (tripType === 'roundTrips') {
+        roundTripSection.classList.remove('hidden');
+        oneWaySection.classList.add('hidden');
+        roundTripTab.classList.add('active', 'bg-blue-600', 'text-white');
+        oneWayTab.classList.remove('active', 'bg-blue-600', 'text-white');
+        oneWayTab.classList.add('bg-gray-200', 'text-gray-700');
+        breadcrumbText.textContent = 'Round Trips';
+    } else {
+        oneWaySection.classList.remove('hidden');
+        roundTripSection.classList.add('hidden');
+        oneWayTab.classList.add('active', 'bg-blue-600', 'text-white');
+        roundTripTab.classList.remove('active', 'bg-blue-600', 'text-white');
+        roundTripTab.classList.add('bg-gray-200', 'text-gray-700');
+        breadcrumbText.textContent = 'One-Way Trips';
+    }
+    renderFlights(tripType);
+    renderPagination(tripType);
+}
+
+roundTripTab.addEventListener('click', () => switchTab('roundTrips'));
+oneWayTab.addEventListener('click', () => switchTab('oneWays'));
+
+// Initial render on page load
+document.addEventListener('DOMContentLoaded', () => {
+    switchTab('roundTrips');
+});
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("dark-mode-toggle");
+    const icon = toggleBtn.querySelector("i");
+
+    // Update icon on load
+    function updateIcon() {
+        if (document.documentElement.classList.contains("dark")) {
+            icon.classList.remove("fa-moon");
+            icon.classList.add("fa-sun");
+        } else {
+            icon.classList.remove("fa-sun");
+            icon.classList.add("fa-moon");
+        }
+    }
+    updateIcon();
+
+    toggleBtn.addEventListener("click", function () {
+        document.documentElement.classList.toggle("dark");
+
+        if (document.documentElement.classList.contains("dark")) {
+            localStorage.setItem("theme", "dark");
+        } else {
+            localStorage.setItem("theme", "light");
+        }
+
+        updateIcon();
+    });
+});
+

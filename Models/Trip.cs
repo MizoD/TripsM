@@ -54,6 +54,7 @@ namespace Models
         public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
         public ICollection<Flight> Flights { get; set; } = new List<Flight>();
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+        public ICollection<TripImage> TripImages { get; set; } = new List<TripImage>();
 
     }
 }

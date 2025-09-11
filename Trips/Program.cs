@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Trips
 {
@@ -17,7 +14,8 @@ namespace Trips
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+                    sqlOptions => sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option =>
             {
@@ -53,7 +51,7 @@ namespace Trips
 
             builder.Services.AddAuthorization();
             builder.Services.AddAuthentication()
-                .AddGoogle("google", opt =>
+                .AddGoogle("Google", opt =>
                 {
                     var googleAuth = builder.Configuration.GetSection("Authentication:Google");
                     opt.ClientId = googleAuth["ClientId"]!;
@@ -63,33 +61,13 @@ namespace Trips
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = "/Identity/Accounts/Login";
-                options.AccessDeniedPath = "/Identity/Accounts/AccessDenied";
-            });
-
-            builder.Services.AddAuthentication(option =>
-            {
-                option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(config =>
-            {
-                config.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidAudience = "https://localhost:4200,https://localhost:5000",
-                    ValidIssuer = "https://localhost:7295",
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8
-                            .GetBytes("TourismAPIForGradProject1stPTourismAPIForGradProject1stP")
-                        ),
-                    ValidateLifetime = true
-                };
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Customer/Home/Index";
             });
 
             Stripe.StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
+ 
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -117,6 +95,13 @@ namespace Trips
             {
                 var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
                 dbInitializer.Initialize();
+            }
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                var seeder = new FlightSeatSeeder(context);
+                seeder.SeedSeatsForFlights();
             }
 
             app.Run();

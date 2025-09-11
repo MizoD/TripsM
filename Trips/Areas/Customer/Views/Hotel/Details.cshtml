@@ -1,0 +1,149 @@
+﻿@model HotelDetailsViewVM
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Hotel.Name;
+}
+
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-xl">
+
+    <!-- Breadcrumb -->
+    <nav class="text-sm font-medium text-gray-500 mb-6">
+        <ol class="list-none p-0 inline-flex">
+            <li class="flex items-center">
+                <a asp-area="Customer" asp-controller="Home" asp-action="Index"
+                   class="text-blue-600 hover:text-blue-800 transition-colors">Home</a>
+                <svg class="fill-current w-3 h-3 mx-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243 1.414 1.414L12.95 10.707z" />
+                </svg>
+            </li>
+            <li class="flex items-center">
+                <span class="text-gray-700">@Model.Hotel.Name</span>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <!-- Hotel Info & Images -->
+        <div class="md:col-span-2 space-y-4">
+
+            <!-- Carousel -->
+            <div class="relative w-full overflow-hidden rounded-lg shadow">
+                <div class="flex transition-transform duration-500" id="carouselInner">
+                    @foreach (var img in Model.Hotel.HotelImages)
+                    {
+                        <img src="@img.Imagelink" alt="@Model.Hotel.Name" class="w-full h-64 md:h-96 object-cover flex-shrink-0" />
+                    }
+                    @if (!Model.Hotel.HotelImages.Any())
+                    {
+                        <img src="/images/no-image.png" alt="No Image" class="w-full h-64 md:h-96 object-cover flex-shrink-0" />
+                    }
+                </div>
+
+                <!-- Carousel Controls -->
+                <button onclick="prevSlide()" class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white px-3 py-2 rounded-full hover:bg-opacity-75 transition">‹</button>
+                <button onclick="nextSlide()" class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white px-3 py-2 rounded-full hover:bg-opacity-75 transition">›</button>
+            </div>
+
+            <h1 class="text-3xl font-bold text-gray-900">@Model.Hotel.Name</h1>
+
+            <p class="text-gray-600">
+                Country: <b>@Model.Hotel.Country?.Name</b> | City: <b>@Model.Hotel.City</b> <br />
+                Phone: <b>@Model.Hotel.Phone</b> | Available Rooms: <b>@Model.Hotel.AvailableRooms</b> <br />
+                Traffic: <b>@Model.Hotel.Traffic</b>
+            </p>
+
+            <p class="text-gray-900 font-bold text-xl">
+                Price per Night: $@Model.Hotel.PricePerNight
+            </p>
+
+            <p class="text-gray-700">
+                @Model.Hotel.Description
+            </p>
+        </div>
+
+        <!-- Booking & Wishlist -->
+        <div class="space-y-4">
+            <form asp-action="AddToCart" method="post" class="space-y-4">
+                <input type="hidden" name="hotelId" value="@Model.Hotel.Id" />
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Check-in:</label>
+                    <input type="date" name="checkInDate" class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" required />
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Check-out:</label>
+                    <input type="date" name="checkOutDate" class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" required />
+                </div>
+
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Number of Guests:</label>
+                    <input type="number" name="numberOfGuests" min="1" max="@Model.Hotel.AvailableRooms"
+                           class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" required />
+                </div>
+
+                <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                    Add to Cart
+                </button>
+            </form>
+
+            <form asp-action="AddToWishlist" method="post">
+                <input type="hidden" name="hotelId" value="@Model.Hotel.Id" />
+                <button type="submit" class="w-full bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition">
+                    Add to Wishlist
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Related Hotels -->
+    <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Related Hotels</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        @if (Model.RelatedHotels != null && Model.RelatedHotels.Any())
+        {
+            foreach (var hotel in Model.RelatedHotels)
+            {
+                <div class="border rounded-lg shadow hover:shadow-md transition">
+                    <img src="@hotel.MainImg" alt="@hotel.Name" class="w-full h-40 object-cover rounded-t-lg" />
+                    <div class="p-3">
+                        <h3 class="text-lg font-semibold">@hotel.Name</h3>
+                        <p class="text-gray-700 text-sm">Price per Night: $@hotel.PricePerNight</p>
+                        <a asp-area="Customer" asp-controller="Hotel" asp-action="Details" asp-route-id="@hotel.Id"
+                           class="inline-block mt-2 bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition">
+                            View
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-gray-500">No related hotels found.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentIndex = 0;
+        const carousel = document.getElementById('carouselInner');
+        const totalSlides = carousel.children.length;
+
+        function showSlide(index) {
+            const width = carousel.children[0].offsetWidth;
+            carousel.style.transform = `translateX(-${index * width}px)`;
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            showSlide(currentIndex);
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+            showSlide(currentIndex);
+        }
+    </script>
+}

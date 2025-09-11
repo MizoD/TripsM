@@ -12,6 +12,10 @@ namespace Models
         [Required]
         public string City { get; set; } = null!;
         [Required]
+        public double Latitude { get; set; }
+        [Required]
+        public double Longitude { get; set; }
+        [Required]
         public int CountryId { get; set; }
         [JsonIgnore]
         [ValidateNever]

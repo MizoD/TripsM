@@ -27,7 +27,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Areas\Admin\" />
-	  <Folder Include="Areas\Identity\" />
 	  <Folder Include="wwwroot\images\" />
 	</ItemGroup>
 </Project>

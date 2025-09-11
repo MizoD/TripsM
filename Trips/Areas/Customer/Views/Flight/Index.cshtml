@@ -1,0 +1,121 @@
+﻿@model PaginatedFlightResponse
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Flights";
+}
+
+<div class="max-w-6xl mx-auto bg-white p-8 rounded-lg shadow-xl">
+    <!-- Breadcrumb -->
+    <nav class="text-sm font-medium text-gray-500 mb-6">
+        <ol class="list-none p-0 inline-flex">
+            <li class="flex items-center">
+                <a asp-area="Customer" asp-controller="Home" asp-action="Index"
+                   class="text-blue-600 hover:text-blue-800 transition-colors">Home</a>
+                <svg class="fill-current w-3 h-3 mx-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243 1.414 1.414L12.95 10.707z" />
+                </svg>
+            </li>
+            <li class="flex items-center">
+                <span class="text-gray-700">All Flights</span>
+            </li>
+        </ol>
+    </nav>
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">Available Flights</h1>
+
+    <!-- Filters -->
+    <form method="get" class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <input type="text" name="country" value="@Context.Request.Query["country"]"
+               placeholder="Filter by Country"
+               class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
+
+        <input type="date" name="date" value="@Context.Request.Query["date"]"
+               class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300" />
+
+        <!-- Sort Dropdown -->
+        <select name="sortBy" class="w-full border rounded-lg px-3 py-2 focus:ring focus:ring-blue-300">
+            <option value="price" selected="@("price" == Context.Request.Query["sortBy"])">Sort by Price</option>
+            <option value="date" selected="@("date" == Context.Request.Query["sortBy"])">Sort by Departure Date</option>
+            <option value="duration" selected="@("duration" == Context.Request.Query["sortBy"])">Sort by Duration</option>
+        </select>
+
+        <button type="submit"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            Apply Filters
+        </button>
+    </form>
+
+    <!-- Flight Cards -->
+    <div class="space-y-4">
+        @if (Model.Data != null && Model.Data.Any())
+        {
+            foreach (var flight in Model.Data)
+            {
+                <div class="border rounded-lg p-4 shadow hover:shadow-md transition">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-semibold text-gray-800">@flight.Title</h2>
+                        <span class="text-sm px-2 py-1 rounded bg-gray-200">@flight.Status</span>
+                    </div>
+
+                    <p class="text-gray-600 text-sm">
+                        From: <b>@flight.DepartureAirport?.Name</b> → To: <b>@flight.ArrivalAirport?.Name</b>
+                    </p>
+
+                    <p class="text-gray-600 text-sm">
+                        Departure: @flight.DepartureTime.ToString("MMM dd, yyyy HH:mm") <br />
+                        Arrival: @flight.ArrivalTime.ToString("MMM dd, yyyy HH:mm")
+                    </p>
+
+                    <p class="text-gray-900 font-bold mt-2">
+                        Price: $@flight.Price
+                    </p>
+
+                    <a asp-area="Customer" asp-controller="Flight" asp-action="Details" asp-route-id="@flight.Id"
+                       class="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        View Details
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <p class="text-gray-500">No flights found matching your filters.</p>
+        }
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-center items-center space-x-2 mt-8">
+        @if (Model.PageNumber > 1)
+        {
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageNumber - 1)"
+               asp-route-country="@Context.Request.Query["country"]"
+               asp-route-date="@Context.Request.Query["date"]"
+               asp-route-sortBy="@Context.Request.Query["sortBy"]"
+               class="px-3 py-2 border rounded hover:bg-gray-200">Previous</a>
+        }
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <a asp-action="Index"
+               asp-route-pageNumber="@i"
+               asp-route-country="@Context.Request.Query["country"]"
+               asp-route-date="@Context.Request.Query["date"]"
+               asp-route-sortBy="@Context.Request.Query["sortBy"]"
+               class="px-3 py-2 border rounded @(i == Model.PageNumber ? "bg-blue-600 text-white" : "hover:bg-gray-200")">
+                @i
+            </a>
+        }
+
+        @if (Model.PageNumber < Model.TotalPages)
+        {
+            <a asp-action="Index"
+               asp-route-pageNumber="@(Model.PageNumber + 1)"
+               asp-route-country="@Context.Request.Query["country"]"
+               asp-route-date="@Context.Request.Query["date"]"
+               asp-route-sortBy="@Context.Request.Query["sortBy"]"
+               class="px-3 py-2 border rounded hover:bg-gray-200">Next</a>
+        }
+    </div>
+</div>

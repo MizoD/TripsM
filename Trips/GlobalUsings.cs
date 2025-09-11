@@ -2,6 +2,11 @@
 global using DataAccess.Repositories.IRepositories;
 global using DataAccess.Repositories;
 global using Models;
-global using Models.DTOs.Request;
-global using Utility;
+global using Models.ModelsVM.Response;
+global using Models.ModelsVM.Response.FlightResponse;
+global using Models.ModelsVM.Response.HotelResponse;
+global using Models.ModelsVM.Request.FlightRequest;
+global using Models.ModelsVM.Request;
+global using Models.ModelsVM.Response.TripResponse;
 global using Utility.DbInitializer;
+global using Utility;

@@ -1,0 +1,93 @@
+﻿@model RegisterRequest
+
+<div id="register-modal"
+     class="modal fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+    <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-8 transform scale-95 opacity-0 transition-all duration-300">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Create Account</h2>
+            <button id="close-register-modal"
+                    class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white text-2xl leading-none">
+                &times;
+            </button>
+        </div>
+
+        <!-- Register Form -->
+        <form id="register-form" asp-area="Identity" asp-controller="Account" asp-action="Register" method="post" class="space-y-4">
+            <div class="flex gap-4">
+                <div class="w-1/2">
+                    <input asp-for="FirstName" placeholder="First Name"
+                           class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="FirstName" class="text-red-600 text-sm"></span>
+                </div>
+                <div class="w-1/2">
+                    <input asp-for="LastName" placeholder="Last Name"
+                           class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+                    <span asp-validation-for="LastName" class="text-red-600 text-sm"></span>
+                </div>
+            </div>
+
+            <div>
+                <input asp-for="UserName" placeholder="Username"
+                       class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="UserName" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div>
+                <input asp-for="Email" placeholder="Email Address" type="email"
+                       class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="Email" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div>
+                <input asp-for="Password" placeholder="Password" type="password"
+                       class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="Password" class="text-red-600 text-sm"></span>
+            </div>
+
+            <div>
+                <input asp-for="PasswordConfirmation" placeholder="Confirm Password" type="password"
+                       class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="PasswordConfirmation" class="text-red-600 text-sm"></span>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                Create Account
+            </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="my-6 flex items-center">
+            <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+            <span class="px-4 text-sm text-gray-500 dark:text-gray-400">or</span>
+            <div class="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+        </div>
+
+        <!-- External Login -->
+        <div class="space-y-3">
+            <a asp-area="Identity" asp-controller="Account" asp-action="ExternalLogin" asp-route-provider="Google"
+               class="flex items-center justify-center w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="h-5 w-5 mr-2" alt="Google">
+                Continue with Google
+            </a>
+        </div>
+
+        <!-- Errors --> 
+        <div id="register-modal" class="modal ...">
+            ...
+            @if (TempData["RegisterError"] != null)
+            {
+                <p class="text-red-600">@TempData["RegisterError"]</p>
+            }
+            @if (TempData["RegisterSuccess"] != null)
+            {
+                <p class="text-green-600">@TempData["RegisterSuccess"]</p>
+            }
+        </div>
+    </div>
+</div>
+
+
+

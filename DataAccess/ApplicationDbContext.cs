@@ -29,6 +29,8 @@ namespace DataAccess
         public DbSet<Seat> Seats { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Passenger> Passengers { get; set; }
+        public DbSet<HotelImage> HotelImages { get; set; }
+        public DbSet<Trip> TripImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -106,6 +108,11 @@ namespace DataAccess
             builder.Entity<Trip>()
                 .Property(t => t.Rate)
                 .HasPrecision(18, 2);
+            builder.Entity<HotelImage>()
+                .HasOne(h => h.Hotel)
+                .WithMany(h => h.HotelImages)
+                .HasForeignKey(h => h.HotelId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

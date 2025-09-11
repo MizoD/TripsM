@@ -1,8 +1,11 @@
-﻿namespace Models.DTOs.Request.HotelRequest
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Models.ModelsVM.Request.FlightRequest
 {
     public class FlightSearchRequest
     {
-        public string? Country { get; set; }
+        [Required]
+        public string Country { get; set; } = null!;
         public DateTime? TravelDate { get; set; }
         public int NumberOfPassengers { get; set; }
 

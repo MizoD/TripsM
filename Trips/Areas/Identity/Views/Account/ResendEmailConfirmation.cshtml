@@ -1,0 +1,74 @@
+﻿@model ResendEmailConfirmationRequest
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Resend Email Confirmation";
+}
+
+<div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4 py-12">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-8 transform animate-fade-in-up">
+
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Resend Email Confirmation</h2>
+            <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                Enter your email address and we’ll resend the confirmation link.
+            </p>
+        </div>
+
+        <!-- Resend Form -->
+        <form asp-area="Identity" asp-controller="Account" asp-action="ResendEmailConfirmation" method="post" class="space-y-4">
+            <div>
+                <input asp-for="Email" placeholder="Email Address" type="email"
+                       class="w-full px-4 py-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
+                <span asp-validation-for="Email" class="text-red-600 text-sm"></span>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                Resend Confirmation Email
+            </button>
+        </form>
+
+        <!-- Errors -->
+        <div asp-validation-summary="All" class="text-red-600 text-sm mb-4"></div>
+
+        @if (TempData["Error"] != null)
+        {
+            <p class="mt-4 text-red-600 text-center">@TempData["Error"]</p>
+        }
+
+        <!-- Success -->
+        @if (TempData["Success"] != null)
+        {
+            <p class="mt-4 text-green-600 text-center">@TempData["Success"]</p>
+        }
+
+        <!-- Extra Links -->
+        <div class="mt-6 text-center space-y-2">
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                Already confirmed?
+                <a asp-area="Identity" asp-controller="Account" asp-action="Login"
+                   class="text-blue-600 dark:text-blue-400 hover:underline font-medium">Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Simple fade-up animation -->
+<style>
+    @@keyframes fade-in-up {
+        from {
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fade-in-up 0.5s ease-out forwards;
+    }
+</style>

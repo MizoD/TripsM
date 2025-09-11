@@ -1,4 +1,6 @@
-﻿@{
+﻿@model HomeVM
+
+@{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Home";
 }
@@ -11,7 +13,7 @@
             <h1 class="text-4xl md:text-6xl font-bold mb-4">Discover Your Next Adventure</h1>
             <h2 class="sec__title">
                 Amazing
-                <span class="cd-words-wrapper">
+                <span class="cd-words-wrapper red">
                     <b class="is-visible font-bold">Tours</b>
                     <b>Adventures</b>
                     <b>Flights</b>
@@ -33,11 +35,32 @@
             <form class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
                 <div class="space-y-2">
                     <label for="from" class="block font-medium text-gray-700">From</label>
-                    <input type="text" id="from" placeholder="e.g., New York (JFK)" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                    <select id="from" name="From"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600
+               bg-white dark:bg-gray-700 rounded-lg focus:ring-2
+               focus:ring-blue-500 focus:border-blue-500 transition
+               appearance-none relative">
+                        <option value="" disabled selected hidden>Select a country</option>
+                        @foreach (var country in Model.AirportsName as List<string>)
+                        {
+                            <option value="@country">@country</option>
+                        }
+                    </select>
                 </div>
+
                 <div class="space-y-2">
-                    <label for="to" class="block font-medium text-gray-700 dark">To</label>
-                    <input type="text" id="to" placeholder="e.g., Paris (CDG)" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                    <label for="to" class="block font-medium text-gray-700">To</label>
+                    <select id="to" name="To"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600
+               bg-white dark:bg-gray-700 rounded-lg focus:ring-2
+               focus:ring-blue-500 focus:border-blue-500 transition
+               appearance-none relative">
+                        <option value="" disabled selected hidden>Select a country</option>
+                        @foreach (var country in Model.AirportsName as List<string>)
+                        {
+                            <option value="@country">@country</option>
+                        }
+                    </select>
                 </div>
                 <div class="space-y-2">
                     <label for="departure" class="block font-medium text-gray-700 dark">Departure</label>
@@ -68,7 +91,7 @@
                     </div>
                 </div>
                 <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
-                    <img src="httpshttps://placehold.co/600x400/e74c3c/FFFFFF?text=Rome" alt="Rome" class="w-full h-48 object-cover">
+                    <img src="https://placehold.co/600x400/red/FFFFFF?text=Rome" alt="Rome" class="w-full h-48 object-cover">
                     <div class="p-6">
                         <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Rome, Italy</h3>
                         <p class="text-gray-600 dark:text-gray-400 mt-2">Explore ancient history and savor amazing pasta.</p>
@@ -91,7 +114,132 @@
             </div>
         </div>
     </section>
+    
+    <!-- Hotels -->
+    <section id="hotels" class="py-12 bg-gray-100 dark:bg-gray-900">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">
+                Available Hotels
+            </h2>
 
+            <!-- Slider Wrapper -->
+            <div class="relative overflow-hidden">
+                @if (Model.Hotels.Count > 0)
+                {
+                    <div id="hotelSlider" class="flex gap-6 transition-transform duration-500">
+                        @foreach (var hotel in Model.Hotels)  // Assuming Model.Hotels is your list
+                        {
+                            <div class="min-w-[300px] max-w-[300px] bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg flex-shrink-0">
+                                <img src="https://placehold.co/600x400?text=@hotel.City"
+                                     alt="@hotel.Name"
+                                     class="w-full h-40 object-cover">
+                                <div class="p-4">
+                                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white">@hotel.Name</h3>
+                                    <p class="text-gray-600 dark:text-gray-400 mt-1">@hotel.Description</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                        📍 @hotel.City, @hotel.Country?.Name
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        ☎️ @hotel.Phone
+                                    </p>
+                                    <p class="mt-2 font-bold text-indigo-600 dark:text-indigo-400">
+                                        $@hotel.PricePerNight / night
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        Rooms Available: @hotel.AvailableRooms
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+
+                    <div class="flex items-center justify-center h-screen">
+                        <p class="font-bold text-lg">There is no Hotels to show.</p>
+                    </div>
+                }
+                <!-- Navigation Buttons -->
+                <button id="prevHotel"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-full">
+                    ‹
+                </button>
+                <button id="nextHotel"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-full">
+                    ›
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews -->
+    <section id="reviews" class="py-12">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">
+                What Our Users Say
+            </h2>
+
+            <!-- Slider Wrapper -->
+            <div class="relative overflow-hidden">
+                @if (Model.Reviews != null && Model.Reviews.Count > 0)
+                {
+                    <div id="reviewSlider" class="flex gap-6 transition-transform duration-500">
+                        @foreach (var review in Model.Reviews)
+                        {
+                            <div class="min-w-[300px] max-w-[300px] bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg p-6 flex-shrink-0">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="font-bold text-gray-800 dark:text-white">
+                                        @review.User?.UserName
+                                    </span>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                                        @review.CreatedAt.ToString("MMM dd, yyyy")
+                                    </span>
+                                </div>
+
+                                <!-- Rating Stars -->
+                                <div class="flex mb-3">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= review.Rating)
+                                        {
+                                            <span class="text-yellow-400">★</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-gray-400">★</span>
+                                        }
+                                    }
+                                </div>
+
+                                <p class="text-gray-700 dark:text-gray-300 italic">
+                                    "@review.Comment"
+                                </p>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="flex items-center justify-center h-48">
+                        <p class="font-bold text-lg text-gray-600 dark:text-gray-300">
+                            No reviews yet. Be the first to share your experience!
+                        </p>
+                    </div>
+                }
+
+                <!-- Navigation Buttons -->
+                <button id="prevReview"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-full">
+                    ‹
+                </button>
+                <button id="nextReview"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-full">
+                    ›
+                </button>
+            </div>
+        </div>
+    </section>
     <!-- Contact Section -->
     <section id="contact" class="py-12 bg-gray-100 dark:bg-black/20">
         <div class="container mx-auto px-6">

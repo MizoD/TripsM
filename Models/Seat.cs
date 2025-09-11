@@ -4,7 +4,8 @@ using System.Text.Json.Serialization;
 
 namespace Models
 {
-    public enum Coach { Economy, Business, FirstClass}
+    public enum Coach { Economy, Business, FirstClass }
+
     public class Seat
     {
         public int Id { get; set; }
@@ -21,19 +22,14 @@ namespace Models
 
         [Required(ErrorMessage = "Flight is required")]
         public int FlightId { get; set; }
+
         [JsonIgnore]
         public Flight Flight { get; set; } = null!;
 
         [NotMapped]
         public string SeatLabel => $"{Number} ({Coach})";
-
         [NotMapped]
-        public decimal CurrentPrice => Flight?.GetPriceForCoach(Coach) ?? 0;
-
-        public bool CanCheckIn()
-        {
-            return IsBooked && !IsCheckedIn &&
-                   Flight.Status == FlightStatus.Boarding;
-        }
+        public decimal CurrentPrice =>
+            Flight?.GetPriceForCoach(Coach) ?? 0;
     }
 }

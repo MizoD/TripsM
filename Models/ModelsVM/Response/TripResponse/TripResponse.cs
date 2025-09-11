@@ -1,4 +1,4 @@
-﻿namespace Models.DTOs.Response.TripResponse
+﻿namespace Models.ModelsVM.Response.TripResponse
 {
     public class TripResponse
     {
