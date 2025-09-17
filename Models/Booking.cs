@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Models
 {
-    public enum PaymentMethod { Visa, CASHONSITE}
+    public enum PaymentMethod { Visa, CASHONSITE, ADMINGIFT}
     public enum BookingStatus
     {
         Pending,    
@@ -29,6 +29,7 @@ namespace Models
         [Required]
         public string UserId { get; set; } = null!;
         [JsonIgnore]
+        [ValidateNever]
         public ApplicationUser User { get; set; } = null!;
 
         public int? TripId { get; set; }

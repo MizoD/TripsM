@@ -1,0 +1,494 @@
+﻿@model AdminDashboardVM
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+@section Styles {
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            }
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 5px;
+                height: 100%;
+                background: var(--primary);
+            }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--secondary);
+            font-weight: 500;
+            margin: 0.5rem 0 0 0;
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .change-positive {
+            color: #10b981;
+        }
+
+        .change-negative {
+            color: #ef4444;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .revenue-chart {
+            height: 300px;
+            position: relative;
+        }
+
+        .reviews-chart {
+            height: 300px;
+            position: relative;
+        }
+
+        .reviews-summary {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+        }
+
+        .review-stat {
+            text-align: center;
+        }
+
+        .review-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .review-label {
+            color: var(--secondary);
+            font-size: 0.85rem;
+            margin: 0.25rem 0 0 0;
+        }
+
+        .recent-activity {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+            .activity-item:last-child {
+                border-bottom: none;
+            }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .activity-time {
+            color: var(--secondary);
+            font-size: 0.8rem;
+            margin: 0;
+        }
+
+        /* Icon colors */
+        .icon-blue {
+            background: linear-gradient(45deg, #4361ee, #3a56d4);
+        }
+
+        .icon-green {
+            background: linear-gradient(45deg, #10b981, #059669);
+        }
+
+        .icon-purple {
+            background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+        }
+
+        .icon-pink {
+            background: linear-gradient(45deg, #ec4899, #db2777);
+        }
+
+        .icon-orange {
+            background: linear-gradient(45deg, #f97316, #ea580c);
+        }
+
+        .icon-red {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+
+        .icon-teal {
+            background: linear-gradient(45deg, #14b8a6, #0d9488);
+        }
+
+        .icon-indigo {
+            background: linear-gradient(45deg, #6366f1, #4f46e5);
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 1200px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+}
+
+<div class="dashboard-header">
+    <h2>Dashboard Overview</h2>
+    <p>Welcome back, here's what's happening with your business today.</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon icon-blue">
+            <i class="fas fa-ticket-alt"></i>
+        </div>
+        <div class="stat-content">
+            <div>
+                <h3 class="stat-value">@Model.BookingsCount</h3>
+                <p class="stat-label">Total Bookings</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon icon-green">
+            <i class="fas fa-dollar-sign"></i>
+        </div>
+        <div class="stat-content">
+            <div>
+                <h3 class="stat-value">$@Model.TotalBookingsMade.ToString("N0")</h3>
+                <p class="stat-label">Total Revenue</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon icon-purple">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-content">
+            <div>
+                <h3 class="stat-value">@Model.TotalUsers</h3>
+                <p class="stat-label">Registered Users</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon icon-pink">
+            <i class="fas fa-route"></i>
+        </div>
+        <div class="stat-content">
+            <div>
+                <h3 class="stat-value">@Model.TripsCount</h3>
+                <p class="stat-label">Total Trips</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon icon-orange">
+            <i class="fas fa-plane-departure"></i>
+        </div>
+        <div class="stat-content">
+            <div>
+                <h3 class="stat-value">@Model.FlightsCount</h3>
+                <p class="stat-label">Flights</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon icon-red">
+            <i class="fas fa-hotel"></i>
+        </div>
+        <div class="stat-content">
+            <div>
+                <h3 class="stat-value">@Model.HotelsCount</h3>
+                <p class="stat-label">Hotels</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon icon-teal">
+            <i class="fas fa-plane"></i>
+        </div>
+        <div class="stat-content">
+            <div>
+                <h3 class="stat-value">@Model.AircraftCount</h3>
+                <p class="stat-label">Aircraft</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon icon-indigo">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="stat-content">
+            <div>
+                <h3 class="stat-value">@Model.TotalReviews</h3>
+                <p class="stat-label">Total Reviews</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="charts-container">
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3 class="chart-title">Revenue Overview</h3>
+        </div>
+        <div class="revenue-chart">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3 class="chart-title">Reviews Summary</h3>
+        </div>
+        <div class="reviews-chart">
+            <canvas id="reviewsChart"></canvas>
+        </div>
+        <div class="reviews-summary">
+            <div class="review-stat">
+                <h4 class="review-value">@Model.GoodReviewsCount</h4>
+                <p class="review-label">Positive Reviews</p>
+            </div>
+            <div class="review-stat">
+                <h4 class="review-value">@Model.BadReviewsCount</h4>
+                <p class="review-label">Negative Reviews</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="recent-activity">
+    <div class="chart-header">
+        <h3 class="chart-title">System Overview</h3>
+    </div>
+    <ul class="activity-list">
+        <li class="activity-item">
+            <div class="activity-icon icon-blue">
+                <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="activity-content">
+                <h4 class="activity-title">Airports</h4>
+                <p class="activity-time">@Model.AirportsCount airports in the system</p>
+            </div>
+        </li>
+        <li class="activity-item">
+            <div class="activity-icon icon-green">
+                <i class="fas fa-globe"></i>
+            </div>
+            <div class="activity-content">
+                <h4 class="activity-title">Countries</h4>
+                <p class="activity-time">@Model.CountriesCount countries available</p>
+            </div>
+        </li>
+        <li class="activity-item">
+            <div class="activity-icon icon-purple">
+                <i class="fas fa-chair"></i>
+            </div>
+            <div class="activity-content">
+                <h4 class="activity-title">Seats Management</h4>
+                <p class="activity-time">Configure seating for all aircraft</p>
+            </div>
+        </li>
+    </ul>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            const revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Revenue ($)',
+                        data: [12000, 19000, 15000, 25000, 22000, 30000, 28000, 35000, 32000, 40000, 38000, 45000],
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Reviews Chart
+            const reviewsCtx = document.getElementById('reviewsChart').getContext('2d');
+            const reviewsChart = new Chart(reviewsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Positive (4-5 stars)', 'Neutral (3 stars)', 'Negative (1-2 stars)'],
+                    datasets: [{
+                        data: [@Model.GoodReviewsCount, @(Model.TotalReviews - Model.GoodReviewsCount - Model.BadReviewsCount), @Model.BadReviewsCount],
+                        backgroundColor: [
+                            '#10b981',
+                            '#6b7280',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

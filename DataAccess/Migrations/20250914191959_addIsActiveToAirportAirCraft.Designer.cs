@@ -4,6 +4,7 @@ using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250914191959_addIsActiveToAirportAirCraft")]
+    partial class addIsActiveToAirportAirCraft
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -193,7 +196,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("AirportId");
 
-                    b.ToTable("AirCrafts", (string)null);
+                    b.ToTable("AirCrafts");
                 });
 
             modelBuilder.Entity("Models.Airport", b =>
@@ -228,7 +231,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("Airports", (string)null);
+                    b.ToTable("Airports");
                 });
 
             modelBuilder.Entity("Models.ApplicationUser", b =>
@@ -348,7 +351,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("ApplicationUserOTPs", (string)null);
+                    b.ToTable("ApplicationUserOTPs");
                 });
 
             modelBuilder.Entity("Models.Booking", b =>
@@ -407,7 +410,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("Models.Country", b =>
@@ -432,7 +435,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Countries", (string)null);
+                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("Models.Flight", b =>
@@ -482,7 +485,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("TripId");
 
-                    b.ToTable("Flights", (string)null);
+                    b.ToTable("Flights");
                 });
 
             modelBuilder.Entity("Models.FlightCart", b =>
@@ -503,7 +506,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("FlightCarts", (string)null);
+                    b.ToTable("FlightCarts");
                 });
 
             modelBuilder.Entity("Models.FlightWishlist", b =>
@@ -521,7 +524,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("FlightWishlists", (string)null);
+                    b.ToTable("FlightWishlists");
                 });
 
             modelBuilder.Entity("Models.Hotel", b =>
@@ -574,7 +577,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("TripId");
 
-                    b.ToTable("Hotels", (string)null);
+                    b.ToTable("Hotels");
                 });
 
             modelBuilder.Entity("Models.HotelCart", b =>
@@ -595,7 +598,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("HotelCarts", (string)null);
+                    b.ToTable("HotelCarts");
                 });
 
             modelBuilder.Entity("Models.HotelImage", b =>
@@ -617,7 +620,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("HotelImages", (string)null);
+                    b.ToTable("HotelImages");
                 });
 
             modelBuilder.Entity("Models.HotelWishlist", b =>
@@ -635,7 +638,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("HotelId");
 
-                    b.ToTable("HotelWishlists", (string)null);
+                    b.ToTable("HotelWishlists");
                 });
 
             modelBuilder.Entity("Models.Passenger", b =>
@@ -665,7 +668,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("SeatId");
 
-                    b.ToTable("Passengers", (string)null);
+                    b.ToTable("Passengers");
                 });
 
             modelBuilder.Entity("Models.Review", b =>
@@ -699,7 +702,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews", (string)null);
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Models.Seat", b =>
@@ -731,7 +734,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("FlightId");
 
-                    b.ToTable("Seats", (string)null);
+                    b.ToTable("Seats");
                 });
 
             modelBuilder.Entity("Models.Ticket", b =>
@@ -755,7 +758,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("BookingId");
 
-                    b.ToTable("Tickets", (string)null);
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("Models.Trip", b =>
@@ -819,7 +822,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("Trip", (string)null);
+                    b.ToTable("Trip");
                 });
 
             modelBuilder.Entity("Models.TripCart", b =>
@@ -840,7 +843,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("TripId");
 
-                    b.ToTable("TripCarts", (string)null);
+                    b.ToTable("TripCarts");
                 });
 
             modelBuilder.Entity("Models.TripImage", b =>
@@ -862,7 +865,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("TripId");
 
-                    b.ToTable("TripImage", (string)null);
+                    b.ToTable("TripImage");
                 });
 
             modelBuilder.Entity("Models.TripWishlist", b =>
@@ -880,7 +883,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("TripId");
 
-                    b.ToTable("TripWishlists", (string)null);
+                    b.ToTable("TripWishlists");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

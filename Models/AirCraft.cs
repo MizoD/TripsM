@@ -18,6 +18,7 @@ namespace Models
 
         [Required]
         public decimal InitialPrice { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public int AirportId { get; set; }
         [JsonIgnore]

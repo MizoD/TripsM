@@ -1,0 +1,254 @@
+﻿@model Airport
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = $"Edit {Model.Name}";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Airport - Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f5f7fb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #3949ab 0%, #1a237e 100%);
+            color: white;
+            border-radius: 10px 10px 0 0;
+            padding: 1rem 1.5rem;
+            margin: -2rem -2rem 2rem -2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #1a237e;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3949ab 0%, #1a237e 100%);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, #283593 0%, #1a237e 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+        .form-control:focus {
+            border-color: #3949ab;
+            box-shadow: 0 0 0 0.25rem rgba(57, 73, 171, 0.25);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+        }
+
+            .back-btn:hover {
+                background: linear-gradient(135deg, #546e7a 0%, #455a64 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+        .alert-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        .coordinate-input {
+            font-family: monospace;
+        }
+
+        .field-validation-error {
+            color: #dc3545;
+            font-size: 0.875rem;
+        }
+
+        .readonly-coordinate {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-plane-departure me-3"></i>Edit Airport</h1>
+                    <p class="lead mb-0">Update airport information</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="btn-group">
+                        <a href="@Url.Action("Index")" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Edit Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Airport Details</h4>
+                    </div>
+
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" name="page" value="@ViewBag.Page" />
+                        <input type="hidden" name="search" value="@ViewBag.Search" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label">Airport Name</label>
+                                <input asp-for="Name" type="text" class="form-control" placeholder="Enter airport name">
+                                <span asp-validation-for="Name" class="field-validation-error"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="City" class="form-label">City</label>
+                                <input asp-for="City" type="text" class="form-control" placeholder="Enter city name">
+                                <span asp-validation-for="City" class="field-validation-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CountryId" class="form-label">Country</label>
+                            <select asp-for="CountryId" class="form-select" asp-items="ViewBag.Countries">
+                                <option value="">-- Select Country --</option>
+                            </select>
+                            <span asp-validation-for="CountryId" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Latitude" class="form-label">Latitude</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                    <input asp-for="Latitude" type="number" step="any" class="form-control coordinate-input readonly-coordinate" placeholder="e.g., 40.6413" readonly>
+                                </div>
+                                <span asp-validation-for="Latitude" class="field-validation-error"></span>
+                                <small class="form-text text-muted">Coordinates cannot be modified for existing airports.</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Longitude" class="form-label">Longitude</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                    <input asp-for="Longitude" type="number" step="any" class="form-control coordinate-input readonly-coordinate" placeholder="e.g., -73.7781" readonly>
+                                </div>
+                                <span asp-validation-for="Longitude" class="field-validation-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="IsActive" type="checkbox" class="form-check-input">
+                            <label asp-for="IsActive" class="form-check-label">Active Airport</label>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <a href="@Url.Action("Index", new { page = ViewBag.Page, search = ViewBag.Search })"
+                               class="btn back-btn me-md-2">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Update Airport</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Notification -->
+    @if (ViewContext.ViewData.ModelState.ContainsKey(""))
+    {
+        <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            @Html.ValidationSummary(false, "", new { @class = "m-0" })
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-hide alert after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            var alert = document.querySelector('.alert');
+            if (alert) {
+                setTimeout(function() {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            }
+
+            // Add validation styling
+            var forms = document.querySelectorAll('form');
+            forms.forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

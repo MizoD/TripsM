@@ -20,6 +20,7 @@ namespace Models
         [JsonIgnore]
         [ValidateNever]
         public Country Country { get; set; } = null!;
+        public bool IsActive { get; set; } = true;
         public ICollection<Flight> ArrivalFlights { get; set; } = new List<Flight>();
         public ICollection<Flight> DepartureFlights { get; set; } = new List<Flight>();
     }

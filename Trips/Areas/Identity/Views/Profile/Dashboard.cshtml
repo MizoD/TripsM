@@ -1,0 +1,822 @@
+﻿@model DashboardVM
+@{
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="dashboard-container">
+    <!-- Welcome Header -->
+    <div class="welcome-header">
+        <div class="welcome-content">
+            <h1 class="welcome-title slide-in-left">Welcome back, <span class="gradient-text">@Model.FirstName!</span></h1>
+            <p class="welcome-subtitle fade-in">Here's what's happening with your account today</p>
+            <div class="user-details fade-in-delayed">
+                <div class="detail-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>@Model.FirstName @Model.LastName</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>@Model.Email</span>
+                </div>
+                <div class="detail-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</span>
+                </div>
+            </div>
+        </div>
+        <div class="user-profile-pic scale-in">
+            <img src="~/images/@(Model.ImgUrl ?? "default-user.png")"
+                 alt="Profile Picture"
+                 onerror="this.src='https://ui-avatars.com/api/?name=@(Model.FirstName)+@(Model.LastName)&background=random&size=200&rounded=true&bold=true'" />
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card slide-in-left">
+            <div class="stat-icon">
+                <div class="icon-wrapper bg-primary">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">@Model.BookingsCount</h3>
+                <p class="stat-label">Total Bookings</p>
+            </div>
+            <div class="stat-badge">+0%</div>
+        </div>
+
+        <div class="stat-card slide-in-left delay-1">
+            <div class="stat-icon">
+                <div class="icon-wrapper bg-danger">
+                    <i class="fas fa-heart"></i>
+                </div>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">@Model.AllwishlistCount</h3>
+                <p class="stat-label">Wishlist Items</p>
+            </div>
+            <div class="stat-badge">+0%</div>
+        </div>
+
+        <div class="stat-card slide-in-left delay-2">
+            <div class="stat-icon">
+                <div class="icon-wrapper bg-info">
+                    <i class="fas fa-plane"></i>
+                </div>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">@Model.FlightsBookedCount</h3>
+                <p class="stat-label">Flights Booked</p>
+            </div>
+            <div class="stat-badge">+0%</div>
+        </div>
+
+        <div class="stat-card slide-in-left delay-3">
+            <div class="stat-icon">
+                <div class="icon-wrapper bg-warning">
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-value">@Model.UserReviewsCount</h3>
+                <p class="stat-label">Reviews</p>
+            </div>
+            <div class="stat-badge">+0%</div>
+        </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+        <!-- Recent Bookings -->
+        <div class="content-card slide-in-right">
+            <div class="card-header">
+                <h3><i class="fas fa-history me-2"></i> Recent Bookings</h3>
+                <a asp-area="Identity" asp-controller="Profile" asp-action="MyBookings" class="view-all-btn">
+                    View All <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            @if (Model.Bookings != null && Model.Bookings.Any())
+            {
+                <div class="bookings-list">
+                    @foreach (var booking in Model.Bookings.Take(5))
+                    {
+                        <div class="booking-item">
+                            <div class="booking-info">
+                                <div class="booking-id">#@booking.Id</div>
+                                <div class="booking-date">@booking.BookingDate.ToString("MMM dd, yyyy")</div>
+                            </div>
+                            <div class="booking-status">
+                                <span class="status-badge status-@booking.Status.ToString().ToLower()">
+                                    @booking.Status
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <i class="fas fa-ticket-alt"></i>
+                    <p>You have no bookings yet</p>
+                    <a href="#" class="btn-primary">Book Now</a>
+                </div>
+            }
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="content-card slide-in-right delay-1">
+            <div class="card-header">
+                <h3><i class="fas fa-bolt me-2"></i> Quick Actions</h3>
+            </div>
+            <div class="quick-actions">
+                <a href="~/Customer/Flight/Index" class="action-btn">
+                    <div class="action-icon bg-primary">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <span>Find Flights</span>
+                </a>
+                <a href="~/Customer/Hotel/Index" class="action-btn">
+                    <div class="action-icon bg-success">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+                    <span>Book Hotels</span>
+                </a>
+                <a asp-area="Identity" asp-controller="Profile" asp-action="MyWishlist" class="action-btn">
+                    <div class="action-icon bg-danger">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <span>My Wishlist</span>
+                </a>
+                <a asp-area="Identity" asp-controller="Profile" asp-action="MyReviews" class="action-btn">
+                    <div class="action-icon bg-warning">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <span>My Reviews</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upcoming Trips (if any) -->
+    @if (Model.Bookings != null && Model.Bookings.Any(b => b.Status == BookingStatus.Paid))
+    {
+        <div class="content-card slide-in-up">
+            <div class="card-header">
+                <h3><i class="fas fa-calendar-check me-2"></i> Upcoming Trips</h3>
+            </div>
+            <div class="upcoming-trips">
+                @foreach (var booking in Model.Bookings.Where(b => b.Status == BookingStatus.Paid).Take(3))
+                {
+                    <div class="trip-card">
+                        <div class="trip-date">
+                            <div class="trip-day">@booking.BookingDate.ToString("dd")</div>
+                            <div class="trip-month">@booking.BookingDate.ToString("MMM")</div>
+                        </div>
+                        <div class="trip-info">
+                            <h4>Flight Booking #@booking.Id</h4>
+                            <p>Confirmed · @booking.BookingDate.ToString("ddd, h:mm tt")</p>
+                        </div>
+                        <div class="trip-actions">
+                            <button class="icon-btn">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --primary-light: #e6ecff;
+        --danger: #e5383b;
+        --danger-light: #ffe6e7;
+        --info: #3a56d4;
+        --info-light: #e6ecff;
+        --warning: #f9a826;
+        --warning-light: #fff4e0;
+        --success: #38a169;
+        --success-light: #e6f6ed;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --card-bg: #ffffff;
+        --card-border: #e5e7eb;
+        --text-primary: #1f2937;
+        --text-secondary: #6b7280;
+        --text-muted: #9ca3af;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-container {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        background: var(--gray-50);
+        min-height: 100vh;
+    }
+
+    /* Welcome Header */
+    .welcome-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+        background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        color: var(--text-primary);
+        border: 1px solid var(--card-border);
+    }
+
+    .welcome-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .welcome-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .user-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+    }
+
+        .detail-item i {
+            width: 20px;
+            color: var(--primary);
+        }
+
+    .user-profile-pic img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--gray-200);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        background: white;
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        color: var(--text-primary);
+        border: 1px solid var(--card-border);
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+    .stat-icon {
+        margin-right: 1rem;
+    }
+
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+
+    .bg-primary {
+        background: var(--primary);
+    }
+
+    .bg-danger {
+        background: var(--danger);
+    }
+
+    .bg-info {
+        background: var(--info);
+    }
+
+    .bg-warning {
+        background: var(--warning);
+    }
+
+    .bg-success {
+        background: var(--success);
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+        color: var(--text-primary);
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .stat-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--success-light);
+        color: var(--success);
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    /* Content Grid */
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    @@media (max-width: 992px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .content-card {
+        background: var(--card-bg);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border: 1px solid var(--card-border);
+        color: var(--text-primary);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+        .card-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+    .view-all-btn {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        transition: color 0.2s ease;
+    }
+
+        .view-all-btn:hover {
+            color: var(--info);
+        }
+
+    /* Bookings List */
+    .bookings-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .booking-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--gray-50);
+        border-radius: 12px;
+        transition: background 0.2s ease;
+        border: 1px solid var(--gray-200);
+    }
+
+        .booking-item:hover {
+            background: var(--gray-100);
+        }
+
+    .booking-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .booking-id {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .booking-date {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+    }
+
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-paid {
+        background: var(--success-light);
+        color: var(--success);
+    }
+
+    .status-pending {
+        background: var(--warning-light);
+        color: var(--warning);
+    }
+
+    .status-cancelled {
+        background: var(--danger-light);
+        color: var(--danger);
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem 1rem;
+        background: var(--gray-50);
+        border-radius: 12px;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.2s ease;
+        border: 1px solid var(--gray-200);
+    }
+
+        .action-btn:hover {
+            background: var(--gray-100);
+            transform: translateY(-3px);
+            color: var(--primary);
+        }
+
+    .action-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        color: white;
+    }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-muted);
+    }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            color: var(--gray-400);
+        }
+
+        .empty-state p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
+
+        .btn-primary:hover {
+            background: var(--info);
+            color: white;
+        }
+
+    /* Upcoming Trips */
+    .upcoming-trips {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .trip-card {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: var(--gray-50);
+        border-radius: 12px;
+        border: 1px solid var(--gray-200);
+    }
+
+    .trip-date {
+        background: white;
+        border-radius: 10px;
+        padding: 0.75rem;
+        text-align: center;
+        margin-right: 1rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        min-width: 60px;
+        border: 1px solid var(--gray-200);
+    }
+
+    .trip-day {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+    }
+
+    .trip-month {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .trip-info {
+        flex: 1;
+    }
+
+        .trip-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .trip-info p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+    .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: none;
+        background: var(--gray-100);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: 1px solid var(--gray-200);
+    }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+    /* Animations */
+    .slide-in-left {
+        opacity: 0;
+        transform: translateX(-30px);
+        animation: slideInLeft 0.6s ease forwards;
+    }
+
+    .slide-in-right {
+        opacity: 0;
+        transform: translateX(30px);
+        animation: slideInRight 0.6s ease forwards;
+    }
+
+    .slide-in-up {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: slideInUp 0.6s ease forwards;
+    }
+
+    .scale-in {
+        opacity: 0;
+        transform: scale(0.9);
+        animation: scaleIn 0.6s ease forwards;
+    }
+
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.8s ease forwards;
+    }
+
+    .fade-in-delayed {
+        opacity: 0;
+        animation: fadeIn 0.8s ease forwards;
+        animation-delay: 0.3s;
+    }
+
+    .delay-1 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.4s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.6s;
+    }
+
+    @@keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem;
+        }
+
+        .welcome-header {
+            flex-direction: column;
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .user-profile-pic {
+            margin-top: 1.5rem;
+        }
+
+        .welcome-title {
+            font-size: 1.8rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .user-details {
+            align-items: center;
+        }
+    }
+</style>
+
+<script>
+    // Add interactive elements
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effects to stat cards
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 8px 20px rgba(0,0,0,0.1)';
+            });
+
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)';
+            });
+        });
+
+        // Add animation to action buttons
+        const actionButtons = document.querySelectorAll('.action-btn');
+        actionButtons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-3px)';
+            });
+
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>

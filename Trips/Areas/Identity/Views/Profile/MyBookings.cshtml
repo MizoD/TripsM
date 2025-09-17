@@ -1,0 +1,559 @@
+﻿@model IEnumerable<Booking>
+
+@{
+    ViewData["Title"] = "My Bookings";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="bookings-container">
+    <div class="bookings-header slide-in-up">
+        <h1><i class="fas fa-ticket-alt me-2"></i>My Bookings</h1>
+        <p>Manage and view all your travel reservations in one place</p>
+    </div>
+
+    <div class="alert-container">
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle me-2"></i> @TempData["InfoMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="bookings-grid">
+            @foreach (var booking in Model.OrderByDescending(b => b.BookingDate))
+            {
+                <div class="booking-card fade-in">
+                    <div class="booking-header">
+                        <div class="booking-id">Booking #@booking.Id</div>
+                        <div class="booking-status status-@booking.Status.ToString().ToLower()">
+                            <i class="status-icon @GetStatusIcon(booking.Status)"></i>
+                            @booking.Status
+                        </div>
+                    </div>
+
+                    <div class="booking-content">
+                        <div class="booking-info">
+                            <div class="info-item">
+                                <i class="fas fa-calendar-day"></i>
+                                <div>
+                                    <div class="info-label">Booking Date</div>
+                                    <div class="info-value">@booking.BookingDate.ToString("MMM dd, yyyy")</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <div>
+                                    <div class="info-label">Total Amount</div>
+                                    <div class="info-value">$@booking.TotalAmount.ToString("N2")</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <i class="fas fa-credit-card"></i>
+                                <div>
+                                    <div class="info-label">Payment Method</div>
+                                    <div class="info-value">@booking.PaymentMethod</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <i class="fas fa-ticket"></i>
+                                <div>
+                                    <div class="info-label">Tickets</div>
+                                    <div class="info-value">@booking.Tickets</div>
+                                </div>
+                            </div>
+
+                            @if (booking.Trip != null)
+                            {
+                                <div class="info-item">
+                                    <i class="fas fa-route"></i>
+                                    <div>
+                                        <div class="info-label">Trip</div>
+                                        <div class="info-value">@booking.Trip.Title</div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (booking.Flight != null)
+                            {
+                                <div class="info-item">
+                                    <i class="fas fa-plane"></i>
+                                    <div>
+                                        <div class="info-label">Flight</div>
+                                        <div class="info-value">@booking.Flight.Title</div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (booking.Hotel != null)
+                            {
+                                <div class="info-item">
+                                    <i class="fas fa-hotel"></i>
+                                    <div>
+                                        <div class="info-label">Hotel</div>
+                                        <div class="info-value">@booking.Hotel.Name</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        @if (booking.Passengers != null && booking.Passengers.Any())
+                        {
+                            <div class="passengers-section">
+                                <h4><i class="fas fa-users me-2"></i>Passengers</h4>
+                                <div class="passengers-list">
+                                    @foreach (var passenger in booking.Passengers)
+                                    {
+                                        <div class="passenger-item">
+                                            <i class="fas fa-user"></i>
+                                            <span>@passenger.FullName</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="booking-actions">
+                        @if (booking.Status == BookingStatus.Paid)
+                        {
+                            <button class="btn-action btn-download">
+                                <i class="fas fa-download"></i> Download Ticket
+                            </button>
+                        }
+
+                        @if (booking.Status == BookingStatus.Pending)
+                        {
+                            <button class="btn-action btn-pay">
+                                <i class="fas fa-credit-card"></i> Complete Payment
+                            </button>
+                        }
+
+                        <button class="btn-action btn-details">
+                            <i class="fas fa-eye"></i> View Details
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state fade-in">
+            <div class="empty-icon">
+                <i class="fas fa-ticket-alt"></i>
+            </div>
+            <h3>No Bookings Yet</h3>
+            <p>You haven't made any bookings yet. Start planning your next adventure!</p>
+            <a href="~/Customer/Trip/Index" class="btn btn-elegant-primary">
+                <i class="fas fa-search me-2"></i>Explore Trips
+            </a>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .bookings-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .bookings-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+            .bookings-header h1 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.5rem;
+                font-size: 2.5rem;
+                background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .bookings-header p {
+                color: #64748b;
+                font-size: 1.1rem;
+                margin: 0;
+            }
+
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @@media (max-width: 768px) {
+            .bookings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .booking-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            }
+
+            .booking-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+            }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .booking-id {
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1rem;
+        }
+
+        .booking-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-pending {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .status-paid {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .status-failed {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .status-cancelled {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .status-refunded {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .status-icon {
+            font-size: 0.75rem;
+        }
+
+        .booking-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .booking-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @@media (max-width: 480px) {
+            .booking-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+
+            .info-item i {
+                color: #4361ee;
+                font-size: 1.1rem;
+                margin-top: 0.25rem;
+            }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .passengers-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+            .passengers-section h4 {
+                font-size: 1rem;
+                color: #374151;
+                margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+            }
+
+        .passengers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .passenger-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+            .passenger-item i {
+                color: #64748b;
+                font-size: 0.8rem;
+            }
+
+        .booking-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-download {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+            .btn-download:hover {
+                background: #dbeafe;
+                transform: translateY(-2px);
+            }
+
+        .btn-pay {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+            .btn-pay:hover {
+                background: #d1fae5;
+                transform: translateY(-2px);
+            }
+
+        .btn-details {
+            background: #f8fafc;
+            color: #374151;
+        }
+
+            .btn-details:hover {
+                background: #f1f5f9;
+                transform: translateY(-2px);
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        /* Animations */
+        .slide-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @@keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Status-specific card borders */
+        .booking-card.status-paid::before {
+            background: #10b981;
+        }
+
+        .booking-card.status-pending::before {
+            background: #f59e0b;
+        }
+
+        .booking-card.status-failed::before {
+            background: #ef4444;
+        }
+
+        .booking-card.status-cancelled::before {
+            background: #6b7280;
+        }
+
+        .booking-card.status-refunded::before {
+            background: #3b82f6;
+        }
+
+        .btn-elegant-primary {
+            text-decoration: none !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to booking cards
+            const bookingCards = document.querySelectorAll('.booking-card');
+            bookingCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.12)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.08)';
+                });
+            });
+
+            // Action button effects
+            const actionButtons = document.querySelectorAll('.btn-action');
+            actionButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Auto-dismiss alerts
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+        });
+    </script>
+}
+
+@functions {
+    private string GetStatusIcon(BookingStatus status)
+    {
+        return status switch
+        {
+            BookingStatus.Pending => "fas fa-clock",
+            BookingStatus.Paid => "fas fa-check-circle",
+            BookingStatus.Failed => "fas fa-times-circle",
+            BookingStatus.Cancelled => "fas fa-ban",
+            BookingStatus.Refunded => "fas fa-undo",
+            _ => "fas fa-question-circle"
+        };
+    }
+}

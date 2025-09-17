@@ -1,0 +1,547 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    Layout = null;
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard - @ViewData["Title"]</title>
+
+    <!-- Styles -->
+    <link href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #6c757d;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --sidebar-width: 280px;
+            --navbar-height: 70px;
+            --sidebar-bg: linear-gradient(180deg, #1e3c72 0%, #2a5298 100%);
+            --content-padding: 2rem;
+            --transition-speed: 0.3s;
+            --border-radius: 12px;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --sidebar-item-hover: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.5s ease;
+            height: var(--navbar-height);
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        @@keyframes slideDown {
+            from
+
+        {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        }
+
+        .home-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--primary);
+            color: white;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+            .home-btn:hover {
+                background: var(--primary-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(67, 97, 238, 0.4);
+            }
+
+        .page-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: var(--sidebar-bg);
+            color: #fff;
+            width: var(--sidebar-width);
+            height: 100vh;
+            padding: 1.5rem 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 1rem 0 2rem;
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+        }
+
+            .user-avatar:hover {
+                transform: scale(1.05);
+                border-color: rgba(255, 255, 255, 0.4);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            }
+
+        .user-info {
+            margin-top: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            margin-top: 1rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.9rem 1.2rem;
+            color: rgba(255, 255, 255, 0.85);
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+            .nav-link:hover, .nav-link.active {
+                color: #fff;
+                background: var(--sidebar-item-hover);
+                transform: translateX(5px);
+            }
+
+            .nav-link i {
+                width: 24px;
+                margin-right: 12px;
+                transition: transform 0.3s ease;
+            }
+
+            .nav-link:hover i {
+                transform: scale(1.1);
+            }
+
+            .nav-link::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.7s ease;
+            }
+
+            .nav-link:hover::before {
+                left: 100%;
+            }
+
+        .logout-form {
+            margin-top: auto;
+            padding: 1rem 0;
+        }
+
+        .logout-btn {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.85);
+            padding: 0.9rem 1.2rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+            .logout-btn:hover {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.1);
+                transform: translateX(5px);
+            }
+
+            .logout-btn i {
+                margin-right: 12px;
+                width: 24px;
+            }
+
+        /* Content Area */
+        .content {
+            margin-left: var(--sidebar-width);
+            padding: var(--content-padding);
+            transition: margin-left var(--transition-speed) ease;
+            min-height: 100vh;
+            padding-top: calc(var(--navbar-height) + 1rem);
+        }
+
+        /* Mobile Toggle Button */
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+            .toggle-btn:hover {
+                background: var(--primary-dark);
+                transform: scale(1.05);
+            }
+
+        /* Overlay for mobile */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 95;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-speed) ease;
+        }
+
+            .overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+        /* Animation for page content */
+        @@keyframes fadeInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .main-content {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 992px) {
+            .sidebar
+
+        {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .content, .top-nav {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .toggle-btn {
+            display: flex;
+        }
+
+        }
+
+        @@media (max-width: 576px) {
+            : root
+
+        {
+            --content-padding: 1rem;
+            --sidebar-width: 100%;
+        }
+
+        .sidebar {
+            width: 100%;
+            padding: 1rem;
+        }
+
+        .top-nav {
+            padding: 1rem;
+            flex-direction: column;
+            height: auto;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-size: 1.2rem;
+            order: -1;
+            width: 100%;
+            text-align: center;
+        }
+
+        .home-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        }
+    </style>
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="toggle-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay for mobile -->
+    <div class="overlay"></div>
+
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <a asp-area="" asp-controller="Home" asp-action="Index" class="home-btn">
+            <i class="fas fa-home"></i>
+            <span>Go to Home</span>
+        </a>
+        <h1 class="page-title">@ViewData["Title"]</h1>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="~/images/@(user?.ImgUrl ?? "default-user.png")"
+                 class="user-avatar"
+                 alt="User Avatar"
+                 onerror="this.src='https://ui-avatars.com/api/?name=@(user?.FirstName)+@(user?.LastName)&background=random&size=200&rounded=true&bold=true'" />
+            <div class="user-info">
+                <h4 class="user-name">@user?.FirstName @user?.LastName</h4>
+                <p class="user-email">@user?.Email</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Dashboard" ? "active" : "")"
+                   asp-area="Identity" asp-controller="Profile" asp-action="Dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Edit" ? "active" : "")"
+                   asp-area="Identity" asp-controller="Profile" asp-action="Edit">
+                    <i class="fas fa-user-edit"></i>
+                    <span>Edit Profile</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "MyBookings" ? "active" : "")"
+                   asp-area="Identity" asp-controller="Profile" asp-action="MyBookings">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>My Bookings</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "MyReviews" ? "active" : "")"
+                   asp-area="Identity" asp-controller="Profile" asp-action="MyReviews">
+                    <i class="fas fa-star"></i>
+                    <span>My Reviews</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "MyWishlist" ? "active" : "")"
+                   asp-area="Identity" asp-controller="Profile" asp-action="MyWishlist">
+                    <i class="fas fa-heart"></i>
+                    <span>My Wishlist</span>
+                </a>
+            </div>
+        </nav>
+
+        <form class="logout-form" method="post" asp-area="Identity" asp-controller="Account" asp-action="Logout">
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </form>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+        <div class="main-content">
+            @RenderBody()
+        </div>
+    </main>
+
+    <script>
+        // Toggle sidebar on mobile
+        const toggleBtn = document.querySelector('.toggle-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.overlay');
+        const topNav = document.querySelector('.top-nav');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+
+            // Adjust top nav position when sidebar is toggled on mobile
+            if (window.innerWidth < 992) {
+                if (sidebar.classList.contains('active')) {
+                    topNav.style.marginLeft = '0';
+                    topNav.style.width = '100%';
+                } else {
+                    topNav.style.marginLeft = '';
+                    topNav.style.width = '';
+                }
+            }
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+
+            // Reset top nav position
+            if (window.innerWidth < 992) {
+                topNav.style.marginLeft = '';
+                topNav.style.width = '';
+            }
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth < 992 &&
+                !sidebar.contains(e.target) &&
+                !toggleBtn.contains(e.target) &&
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+
+                // Reset top nav position
+                topNav.style.marginLeft = '';
+                topNav.style.width = '';
+            }
+        });
+
+        // Add active class to current page link
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Adjust layout on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 992) {
+                // Reset styles for desktop view
+                topNav.style.marginLeft = '';
+                topNav.style.width = '';
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

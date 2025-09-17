@@ -1,0 +1,425 @@
+﻿@model IEnumerable<Review>
+
+@{
+    ViewData["Title"] = "My Reviews";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="reviews-container">
+    <div class="reviews-header slide-in-up">
+        <h1><i class="fas fa-star me-2"></i>My Reviews</h1>
+        <p>View and manage all your travel reviews in one place</p>
+    </div>
+
+    <div class="alert-container">
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle me-2"></i> @TempData["InfoMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="reviews-grid">
+            @foreach (var review in Model.OrderByDescending(r => r.CreatedAt))
+            {
+                <div class="review-card fade-in">
+                    <div class="review-header">
+                        <div class="review-trip">
+                            @if (review.Trip != null)
+                            {
+                                <h3>@review.Trip.Title</h3>
+                            }
+                            else
+                            {
+                                <h3>Trip #@review.TripId</h3>
+                            }
+                        </div>
+                        <div class="review-date">
+                            @review.CreatedAt.ToString("MMM dd, yyyy")
+                        </div>
+                    </div>
+
+                    <div class="review-content">
+                        <div class="rating-section">
+                            <div class="rating-stars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="fas fa-star @(i <= review.Rating ? "filled" : "empty")"></i>
+                                }
+                            </div>
+                            <div class="rating-value">
+                                @review.Rating/5
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(review.Comment))
+                        {
+                            <div class="comment-section">
+                                <p>@review.Comment</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="no-comment">
+                                <p><i>No comment provided</i></p>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="review-actions">
+                        <button class="btn-action btn-edit" data-review-id="@review.Id">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-action btn-delete" data-review-id="@review.Id">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state fade-in">
+            <div class="empty-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <h3>No Reviews Yet</h3>
+            <p>You haven't written any reviews yet. Share your experiences to help other travelers!</p>
+            <a href="~/Customer/Trip/Index" class="btn btn-elegant-primary">
+                <i class="fas fa-search me-2"></i>Explore Trips
+            </a>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .reviews-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .reviews-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+            .reviews-header h1 {
+                font-weight: 700;
+                color: #1e293b;
+                margin-bottom: 0.5rem;
+                font-size: 2.5rem;
+                background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .reviews-header p {
+                color: #64748b;
+                font-size: 1.1rem;
+                margin: 0;
+            }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @@media (max-width: 768px) {
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .review-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .review-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            }
+
+            .review-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: #4361ee;
+            }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .review-trip h3 {
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .review-date {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .review-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+            .rating-stars .fas.fa-star {
+                font-size: 1.2rem;
+            }
+
+            .rating-stars .filled {
+                color: #f59e0b;
+            }
+
+            .rating-stars .empty {
+                color: #cbd5e1;
+            }
+
+        .rating-value {
+            font-weight: 600;
+            color: #374151;
+            background: #f8fafc;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .comment-section {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 3px solid #4361ee;
+        }
+
+            .comment-section p {
+                margin: 0;
+                color: #374151;
+                line-height: 1.5;
+            }
+
+        .no-comment {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+            .no-comment p {
+                margin: 0;
+                color: #94a3b8;
+                font-style: italic;
+            }
+
+        .review-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+            .btn-edit:hover {
+                background: #dbeafe;
+                transform: translateY(-2px);
+            }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+            .btn-delete:hover {
+                background: #fee2e2;
+                transform: translateY(-2px);
+            }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state h3 {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+
+        .btn-elegant-primary {
+            text-decoration: none !important;
+        }
+
+        /* Animations */
+        .slide-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideInUp 0.6s ease forwards;
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @@keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to review cards
+            const reviewCards = document.querySelectorAll('.review-card');
+            reviewCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 15px 40px rgba(0, 0, 0, 0.12)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.08)';
+                });
+            });
+
+            // Action button effects
+            const actionButtons = document.querySelectorAll('.btn-action');
+            actionButtons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Auto-dismiss alerts
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+
+            // Edit and Delete functionality
+            const editButtons = document.querySelectorAll('.btn-edit');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const reviewId = this.getAttribute('data-review-id');
+                    // Implement edit functionality
+                    console.log('Edit review:', reviewId);
+                });
+            });
+
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const reviewId = this.getAttribute('data-review-id');
+                    if (confirm('Are you sure you want to delete this review?')) {
+                        // Implement delete functionality
+                        console.log('Delete review:', reviewId);
+                    }
+                });
+            });
+        });
+    </script>
+}
