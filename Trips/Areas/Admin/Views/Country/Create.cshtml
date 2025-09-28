@@ -1,0 +1,221 @@
+﻿@model Country
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Create a Country";
+}
+
+<!-- Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-globe me-3"></i>Create New Country</h1>
+                <p class="lead mb-0">Add a new country to the system</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group">
+                    <a href="@Url.Action("Index")" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Create Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <div class="form-header">
+                    <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Country Details</h4>
+                </div>
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Validation Summary -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Name" class="form-label">Country Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-flag"></i></span>
+                                <input asp-for="Name" type="text" class="form-control" placeholder="Enter country name">
+                            </div>
+                            <span asp-validation-for="Name" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Code" class="form-label">Country Code</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-code"></i></span>
+                                <input asp-for="Code" type="text" class="form-control" placeholder="Enter country code (e.g., US)">
+                            </div>
+                            <span asp-validation-for="Code" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Currency" class="form-label">Currency (Optional)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-money-bill-wave"></i></span>
+                            <input asp-for="Currency" type="text" class="form-control" placeholder="Enter currency (e.g., USD, EUR)">
+                        </div>
+                        <span asp-validation-for="Currency" class="field-validation-error"></span>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="@Url.Action("Index")" class="btn back-btn me-md-2"><i class="fas fa-times me-2"></i>Cancel</a>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Create Country</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Notification -->
+@if (ViewContext.ViewData.ModelState.ContainsKey(""))
+{
+    <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        @Html.ValidationSummary(false, "", new { @class = "m-0" })
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<script>
+    // Auto-hide alert after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        var alert = document.querySelector('.alert');
+        if (alert) {
+            setTimeout(function() {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        }
+
+        // Add validation styling
+        var forms = document.querySelectorAll('form');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+
+        // Auto-uppercase country code
+        const codeInput = document.getElementById('Code');
+        if (codeInput) {
+            codeInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        }
+    });
+</script>
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 1rem 1.5rem;
+        margin: -2rem -2rem 2rem -2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #0d47a1;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #1976d2;
+        box-shadow: 0 0 0 0.25rem rgba(25, 118, 210, 0.25);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #546e7a 0%, #455a64 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .alert-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
+
+    .field-validation-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+</style>

@@ -1,21 +1,21 @@
-﻿@model CountryIndexVM
+﻿@model TripIndexVM
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewData["Title"] = "Country Management";
+    ViewData["Title"] = "Trip Management";
 }
 
 <!-- Header -->
-<div class="country-header">
+<div class="trip-header">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-6">
-                <h1><i class="fas fa-globe me-3"></i>Country Management</h1>
-                <p class="lead mb-0">Manage all countries in the system</p>
+                <h1><i class="fas fa-route me-3"></i>Trip Management</h1>
+                <p class="lead mb-0">Manage all trips in the system</p>
             </div>
             <div class="col-md-6 text-end">
                 <div class="btn-group">
-                    <a href="~/Admin/Country/Create" class="btn btn-outline-light"><i class="fas fa-plus me-2"></i>Add New Country</a>
-                    <a href="~/Admin/Country/Index" class="btn btn-outline-light"><i class="fas fa-sync-alt me-2"></i>Refresh</a>
+                    <a href="~/Admin/Trip/Create" class="btn btn-outline-light"><i class="fas fa-plus me-2"></i>Add New Trip</a>
+                    <a href="~/Admin/Trip/Index" class="btn btn-outline-light"><i class="fas fa-sync-alt me-2"></i>Refresh</a>
                 </div>
             </div>
         </div>
@@ -28,17 +28,21 @@
         <div class="col-md-9">
             <div class="stats-card">
                 <div class="row">
-                    <div class="col-md-4 text-center border-end">
+                    <div class="col-md-3 text-center border-end">
                         <h3 class="text-primary">@Model.TotalCount</h3>
-                        <p class="text-muted mb-0">Total Countries</p>
-                    </div>
-                    <div class="col-md-4 text-center border-end">
-                        <h3 class="text-success">@Model.TotalTrips</h3>
                         <p class="text-muted mb-0">Total Trips</p>
                     </div>
-                    <div class="col-md-4 text-center">
-                        <h3 class="text-info">@Model.TotalAirports</h3>
-                        <p class="text-muted mb-0">Total Airports</p>
+                    <div class="col-md-3 text-center border-end">
+                        <h3 class="text-success">@Model.Trips.Count(t => t.StartDate > DateTime.Now)</h3>
+                        <p class="text-muted mb-0">Upcoming Trips</p>
+                    </div>
+                    <div class="col-md-3 text-center border-end">
+                        <h3 class="text-warning">@Model.Trips.Count(t => t.EndDate < DateTime.Now)</h3>
+                        <p class="text-muted mb-0">Past Trips</p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <h3 class="text-info">@Model.Trips.Sum(t => t.AvailableSeats)</h3>
+                        <p class="text-muted mb-0">Available Seats</p>
                     </div>
                 </div>
             </div>
@@ -47,7 +51,7 @@
             <div class="search-container text-center">
                 <form asp-action="Index" method="get" class="input-group">
                     <input type="text" name="search" class="form-control"
-                           placeholder="Search countries..." value="@Model.Search" />
+                           placeholder="Search trips..." value="@Model.Search" />
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search"></i>
                     </button>
@@ -56,45 +60,94 @@
         </div>
     </div>
 
-    <!-- Country Cards -->
+    <!-- Trip Cards -->
     <div class="row">
-        @foreach (var country in Model.Countries)
+        @foreach (var trip in Model.Trips)
         {
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card country-card">
+                <div class="card trip-card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">@country.Name</h5>
-                        <span class="badge bg-primary">@country.Code</span>
+                        <h5 class="mb-0">@trip.Title</h5>
+                        @{
+                            var statusClass = trip.IsAvailable ? "bg-success" : "bg-danger";
+                            var statusText = trip.IsAvailable ? "Available" : "Unavailable";
+                        }
+                        <span class="badge @statusClass">@statusText</span>
                     </div>
                     <div class="card-body">
-                        <p class="card-text"><i class="fas fa-flag me-2 text-primary"></i><strong>Code:</strong> @country.Code</p>
-                        <p class="card-text"><i class="fas fa-money-bill-wave me-2 text-primary"></i><strong>Currency:</strong> @(string.IsNullOrEmpty(country.Currency) ? "Not specified" : country.Currency)</p>
-
-                        <div class="row mt-3">
-                            <div class="col-6">
-                                <div class="text-center p-2 bg-light rounded">
-                                    <h6 class="mb-0 text-success">@country.Trips.Count</h6>
-                                    <small class="text-muted">Trips</small>
-                                </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <h6 class="text-muted mb-1">Start Date</h6>
+                                <p class="mb-0 fw-bold">@trip.StartDate.ToString("MMM dd, yyyy")</p>
+                                <small class="text-muted">@trip.Country?.Name</small>
                             </div>
+                            <div class="text-center mx-2">
+                                <i class="fas fa-arrow-right text-primary"></i>
+                                <p class="small mb-0">@trip.DurationDays days</p>
+                            </div>
+                            <div class="text-end">
+                                <h6 class="text-muted mb-1">End Date</h6>
+                                <p class="mb-0 fw-bold">@trip.EndDate.ToString("MMM dd, yyyy")</p>
+                                <small class="text-muted">@trip.TripType</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-6">
-                                <div class="text-center p-2 bg-light rounded">
-                                    <h6 class="mb-0 text-info">@country.Airports.Count</h6>
-                                    <small class="text-muted">Airports</small>
-                                </div>
+                                <p class="card-text mb-1"><i class="fas fa-hotel me-2 text-primary"></i><strong>Hotels:</strong></p>
+                                <small class="text-muted">@trip.Hotels.Count hotels</small>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p class="card-text mb-1"><i class="fas fa-plane me-2 text-primary"></i><strong>Flights:</strong></p>
+                                <small class="text-muted">@trip.Flights.Count flights</small>
+                            </div>
+                        </div>
+
+                        <div class="progress mb-2" style="height: 8px;">
+                            @{
+                                var bookedSeats = trip.TotalSeats - trip.AvailableSeats;
+                                var occupancyPercentage = trip.TotalSeats > 0 ?
+                                (bookedSeats * 100) / trip.TotalSeats : 0;
+                            }
+                            <div class="progress-bar @(occupancyPercentage >= 80 ? "bg-danger" : occupancyPercentage >= 50 ? "bg-warning" : "bg-success")"
+                                 role="progressbar"
+                                 style="width: @occupancyPercentage%"
+                                 aria-valuenow="@occupancyPercentage"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-3">
+                            <span>@trip.AvailableSeats available</span>
+                            <span>@bookedSeats booked</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="card-text mb-0"><i class="fas fa-tag me-2 text-primary"></i><strong>Price:</strong></p>
+                                <span class="fw-bold text-primary">@trip.Price.ToString("C")</span>
+                            </div>
+                            <div class="text-end">
+                                <p class="card-text mb-0"><i class="fas fa-star me-2 text-primary"></i><strong>Rating:</strong></p>
+                                <small class="text-muted">
+                                    @trip.Rate.ToString("0.0")/5 (@trip.Reviews.Count reviews)
+                                </small>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer bg-white border-0 pt-0">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a asp-area="Admin" asp-controller="Country" asp-action="Edit"
-                               asp-route-id="@country.Id" asp-route-page="@Model.CurrentPage" asp-route-search="@Model.Search"
+                            <!-- Edit Button -->
+                            <a asp-area="Admin" asp-controller="Trip" asp-action="Edit"
+                               asp-route-id="@trip.Id" asp-route-page="@Model.CurrentPage" asp-route-search="@Model.Search"
                                class="btn btn-outline-primary action-btn">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
+
+                            <!-- Delete Button -->
                             <button class="btn btn-outline-danger action-btn delete-btn"
-                                    data-id="@country.Id"
-                                    data-name="@country.Name"
+                                    data-id="@trip.Id"
+                                    data-name="@trip.Title"
                                     data-page="@Model.CurrentPage"
                                     data-search="@Model.Search"
                                     data-bs-toggle="modal"
@@ -108,12 +161,27 @@
         }
     </div>
 
+    <!-- No Results Message -->
+    @if (!Model.Trips.Any())
+    {
+        <div class="row">
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-route fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No trips found</h4>
+                <p class="text-muted">Try adjusting your search criteria</p>
+                <a asp-action="Index" class="btn btn-primary mt-2">
+                    <i class="fas fa-sync-alt me-2"></i>Reset Search
+                </a>
+            </div>
+        </div>
+    }
+
     <!-- Pagination -->
     @if (Model.TotalPages > 1)
     {
         <div class="row pagination-container">
             <div class="col-12">
-                <nav aria-label="Country pagination">
+                <nav aria-label="Trip pagination">
                     <ul class="pagination justify-content-center">
 
                         <!-- Previous Button -->
@@ -168,8 +236,8 @@
             </div>
 
             <div class="modal-body">
-                <p>Are you sure you want to delete <strong id="countryName"></strong>?</p>
-                <p class="text-danger small">This action cannot be undone. All associated airports and trips will be affected.</p>
+                <p>Are you sure you want to delete trip <strong id="tripName"></strong>?</p>
+                <p class="text-danger small">This action cannot be undone and will also delete all associated bookings, reviews, hotels, and flights.</p>
             </div>
 
             <div class="modal-footer">
@@ -210,15 +278,15 @@
 }
 
 <style>
-    .country-header {
-        background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+    .trip-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
         color: white;
         padding: 1.5rem 0;
         margin-bottom: 2rem;
         border-radius: 0 0 10px 10px;
     }
 
-    .country-card {
+    .trip-card {
         border-radius: 10px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s, box-shadow 0.3s;
@@ -226,13 +294,13 @@
         border: none;
     }
 
-        .country-card:hover {
+        .trip-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
 
     .card-header {
-        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        background: linear-gradient(135deg, #0a58ca 0%, #0d6efd 100%);
         color: white;
         border-radius: 10px 10px 0 0 !important;
         padding: 1rem 1.5rem;
@@ -242,6 +310,8 @@
         margin: 0 3px;
         border-radius: 5px;
         font-weight: 500;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
     }
 
     .pagination-container {
@@ -249,8 +319,7 @@
     }
 
     .modal-header {
-        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
-        color: white;
+        border-radius: 10px 10px 0 0;
     }
 
     .stats-card {
@@ -275,25 +344,32 @@
         right: 20px;
         z-index: 1050;
         animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: none;
+        border-radius: 8px;
     }
 
     @@keyframes fadeIn {
         from {
             opacity: 0;
+            transform: translateY(-20px);
         }
 
         to {
             opacity: 1;
+            transform: translateY(0);
         }
     }
 
     @@keyframes fadeOut {
         from {
             opacity: 1;
+            transform: translateY(0);
         }
 
         to {
             opacity: 0;
+            transform: translateY(-20px);
         }
     }
 
@@ -304,31 +380,28 @@
     .modal {
         z-index: 1060 !important;
     }
+
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.35em 0.65em;
+    }
 </style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // Delete Modal functionality
         const deleteModal = document.getElementById("deleteModal");
-
         deleteModal.addEventListener("show.bs.modal", function (event) {
             const button = event.relatedTarget;
-
             const id = button.getAttribute("data-id");
             const name = button.getAttribute("data-name");
             const page = button.getAttribute("data-page");
             const search = button.getAttribute("data-search");
 
-            // Fill hidden inputs
             document.getElementById("deleteId").value = id;
             document.getElementById("deletePage").value = page;
             document.getElementById("deleteSearch").value = search;
-
-            // Show country name in modal
-            document.getElementById("countryName").textContent = name;
-        });
-
-        document.addEventListener("shown.bs.modal", function () {
-            document.querySelector(".overlay")?.classList.remove("active");
+            document.getElementById("tripName").textContent = name;
         });
 
         // Auto-hide alerts

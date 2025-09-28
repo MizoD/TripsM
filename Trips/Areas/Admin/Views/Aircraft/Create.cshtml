@@ -1,0 +1,393 @@
+﻿@model AirCraft
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Create an Aircraft";
+}
+
+<!-- Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-plane me-3"></i>Create New Aircraft</h1>
+                <p class="lead mb-0">Add a new aircraft to the system</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group">
+                    <a href="@Url.Action("Index")" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Create Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-container">
+                <div class="form-header">
+                    <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Aircraft Details</h4>
+                </div>
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Validation Summary -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Model" class="form-label">Aircraft Model</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-plane"></i></span>
+                                <input asp-for="Model" type="text" class="form-control" placeholder="Enter aircraft model">
+                            </div>
+                            <span asp-validation-for="Model" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AirlineName" class="form-label">Airline Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                <input asp-for="AirlineName" type="text" class="form-control" placeholder="Enter airline name">
+                            </div>
+                            <span asp-validation-for="AirlineName" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Capacity" class="form-label">Capacity</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                <input asp-for="Capacity" type="number" class="form-control" placeholder="Enter passenger capacity">
+                            </div>
+                            <span asp-validation-for="Capacity" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="InitialPrice" class="form-label">Initial Price</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input asp-for="InitialPrice" type="number" step="0.01" class="form-control" placeholder="Enter initial price">
+                            </div>
+                            <span asp-validation-for="InitialPrice" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label">Status</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="">Select Status</option>
+                                    <option value="@AirCraftStatus.Ready">Ready</option>
+                                    <option value="@AirCraftStatus.Busy">Busy</option>
+                                    <option value="@AirCraftStatus.Maintainance">Maintenance</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="Status" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Type" class="form-label">Aircraft Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tags"></i></span>
+                                <select asp-for="Type" class="form-select">
+                                    <option value="">Select Type</option>
+                                    <option value="@AirCraftType.Economy">Economy</option>
+                                    <option value="@AirCraftType.Business">Business</option>
+                                    <option value="@AirCraftType.Private">Private</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="Type" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="AirportId" class="form-label">Base Airport</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                <select asp-for="AirportId" class="form-select" asp-items="ViewBag.Airports">
+                                    <option value="">Select Base Airport</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="AirportId" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" checked>
+                                <label asp-for="IsActive" class="form-check-label">Active Aircraft</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aircraft Information Preview -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Aircraft Information Preview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p><strong>Model:</strong> <span id="model-preview">@Model.Model</span></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Capacity:</strong> <span id="capacity-preview">@Model.Capacity seats</span></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Type:</strong> <span id="type-preview">Not selected</span></p>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-4">
+                                    <p><strong>Status:</strong> <span id="status-preview">Not selected</span></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Airline:</strong> <span id="airline-preview">@Model.AirlineName</span></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Price:</strong> <span id="price-preview">@Model.InitialPrice.ToString("C")</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="@Url.Action("Index")" class="btn back-btn me-md-2"><i class="fas fa-times me-2"></i>Cancel</a>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Create Aircraft</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Notification -->
+@if (ViewContext.ViewData.ModelState.ContainsKey(""))
+{
+    <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        @Html.ValidationSummary(false, "", new { @class = "m-0" })
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alert after 5 seconds
+        var alert = document.querySelector('.alert');
+        if (alert) {
+            setTimeout(function() {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        }
+
+        // Add validation styling
+        var forms = document.querySelectorAll('form');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+
+        // Update aircraft information preview when form values change
+        function updateAircraftPreview() {
+            const model = document.getElementById('Model').value || '';
+            const capacity = document.getElementById('Capacity').value || '';
+            const type = document.getElementById('Type').value || '';
+            const status = document.getElementById('Status').value || '';
+            const airline = document.getElementById('AirlineName').value || '';
+            const price = document.getElementById('InitialPrice').value || '0';
+
+            // Update model
+            document.getElementById('model-preview').textContent = model || 'Not specified';
+
+            // Update capacity
+            document.getElementById('capacity-preview').textContent = capacity ? capacity + ' seats' : 'Not specified';
+
+            // Update type
+            document.getElementById('type-preview').textContent = type || 'Not selected';
+
+            // Update status
+            document.getElementById('status-preview').textContent = status || 'Not selected';
+
+            // Update airline
+            document.getElementById('airline-preview').textContent = airline || 'Not specified';
+
+            // Update price
+            const priceValue = parseFloat(price) || 0;
+            document.getElementById('price-preview').textContent = '$' + priceValue.toFixed(2);
+        }
+
+        // Add event listeners to form elements that affect the preview
+        const previewFields = ['Model', 'Capacity', 'Type', 'Status', 'AirlineName', 'InitialPrice'];
+        previewFields.forEach(function(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', updateAircraftPreview);
+                field.addEventListener('change', updateAircraftPreview);
+            }
+        });
+
+        // Format price input
+        const priceInput = document.getElementById('InitialPrice');
+        if (priceInput) {
+            priceInput.addEventListener('blur', function() {
+                const value = parseFloat(this.value);
+                if (!isNaN(value)) {
+                    this.value = value.toFixed(2);
+                }
+            });
+        }
+
+        // Validate capacity is positive
+        const capacityInput = document.getElementById('Capacity');
+        if (capacityInput) {
+            capacityInput.addEventListener('blur', function() {
+                const value = parseInt(this.value);
+                if (value < 1) {
+                    this.setCustomValidity('Capacity must be at least 1');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+
+        // Initialize preview
+        updateAircraftPreview();
+    });
+</script>
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 1rem 1.5rem;
+        margin: -2rem -2rem 2rem -2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #0d47a1;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #1976d2;
+        box-shadow: 0 0 0 0.25rem rgba(25, 118, 210, 0.25);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #546e7a 0%, #455a64 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .alert-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
+
+    .field-validation-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+
+    .card {
+        border: 1px solid rgba(25, 118, 210, 0.2);
+        border-radius: 10px;
+    }
+
+    .card-header {
+        background: rgba(25, 118, 210, 0.1);
+        border-bottom: 1px solid rgba(25, 118, 210, 0.2);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
+
+    .form-check-input:checked {
+        background-color: #1976d2;
+        border-color: #1976d2;
+    }
+</style>

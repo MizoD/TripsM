@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Models
@@ -27,6 +28,7 @@ namespace Models
         [Required]
         public int CountryId { get; set; }
         [JsonIgnore]
+        [ValidateNever]
         public Country Country { get; set; } = null!;
         public int? TripId { get; set; }
         [JsonIgnore]

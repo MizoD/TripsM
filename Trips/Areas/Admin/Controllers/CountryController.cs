@@ -14,7 +14,7 @@ namespace Trips.Areas.Admin.Controllers
         {
             this.unitOfWork = unitOfWork;
         }
-
+        
         public async Task<IActionResult> Index(int page = 1, string? search = null)
         {
             var countries = await unitOfWork.CountryRepository
@@ -38,6 +38,8 @@ namespace Trips.Areas.Admin.Controllers
             var viewModel = new CountryIndexVM
             {
                 Countries = pagedCountries,
+                TotalAirports = countries.Sum(c => c.Airports.Count),
+                TotalTrips = countries.Sum(c => c.Trips.Count),
                 CurrentPage = page,
                 PageSize = pageSize,
                 TotalCount = totalCount,
@@ -50,7 +52,7 @@ namespace Trips.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            return View(new Country());
         }
 
         [HttpPost]
@@ -92,9 +94,14 @@ namespace Trips.Areas.Admin.Controllers
                 dbCountry.Code = country.Code;
                 dbCountry.Currency = country.Currency;
 
-                await unitOfWork.CountryRepository.UpdateAsync(dbCountry);
+                var updated = await unitOfWork.CountryRepository.UpdateAsync(dbCountry);
+                if (updated)
+                {
+                    TempData["Success"] = $"✏️ Country '{dbCountry.Name}' updated successfully!";
+                    return RedirectToAction(nameof(Index), new { page, search });
+                }
 
-                return RedirectToAction(nameof(Index), new { page, search });
+                TempData["Error"] = "❌ Failed to update country.";
             }
 
             ViewBag.Page = page;

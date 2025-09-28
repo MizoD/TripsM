@@ -1,0 +1,447 @@
+﻿@model Trip
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Create a Trip";
+}
+
+<!-- Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-route me-3"></i>Create New Trip</h1>
+                <p class="lead mb-0">Add a new trip to the system</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group">
+                    <a href="@Url.Action("Index")" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Create Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-container">
+                <div class="form-header">
+                    <h4 class="mb-0"><i class="fas fa-info-circle me-2"></i>Trip Details</h4>
+                </div>
+
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Validation Summary -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Title" class="form-label">Trip Title</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                                <input asp-for="Title" type="text" class="form-control" placeholder="Enter trip title">
+                            </div>
+                            <span asp-validation-for="Title" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TripType" class="form-label">Trip Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <select asp-for="TripType" class="form-select">
+                                    <option value="">Select Trip Type</option>
+                                    <option value="@TripType.Tourism">Tourism</option>
+                                    <option value="@TripType.Religion">Religion</option>
+                                    <option value="@TripType.Adventure">Adventure</option>
+                                    <option value="@TripType.Romantic">Romantic</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="TripType" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CountryId" class="form-label">Country</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                <select asp-for="CountryId" class="form-select" asp-items="ViewBag.Countries">
+                                    <option value="">Select Country</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="CountryId" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Price" class="form-label">Price</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <input asp-for="Price" type="number" step="0.01" class="form-control" placeholder="Enter trip price">
+                            </div>
+                            <span asp-validation-for="Price" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="StartDate" class="form-label">Start Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input asp-for="StartDate" type="date" class="form-control">
+                            </div>
+                            <span asp-validation-for="StartDate" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="EndDate" class="form-label">End Date</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input asp-for="EndDate" type="date" class="form-control">
+                            </div>
+                            <span asp-validation-for="EndDate" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TotalSeats" class="form-label">Total Seats</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-chair"></i></span>
+                                <input asp-for="TotalSeats" type="number" class="form-control" placeholder="Enter total seats">
+                            </div>
+                            <span asp-validation-for="TotalSeats" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AvailableSeats" class="form-label">Available Seats</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                <input asp-for="AvailableSeats" type="number" class="form-control" placeholder="Enter available seats">
+                            </div>
+                            <span asp-validation-for="AvailableSeats" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="ImageUrl" class="form-label">Image URL</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-image"></i></span>
+                                <input asp-for="ImageUrl" type="url" class="form-control" placeholder="Enter image URL">
+                            </div>
+                            <span asp-validation-for="ImageUrl" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="VideoUrl" class="form-label">Video URL (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-video"></i></span>
+                                <input asp-for="VideoUrl" type="url" class="form-control" placeholder="Enter video URL">
+                            </div>
+                            <span asp-validation-for="VideoUrl" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                                <textarea asp-for="Description" class="form-control" placeholder="Enter trip description" rows="4"></textarea>
+                            </div>
+                            <span asp-validation-for="Description" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input asp-for="IsAvailable" class="form-check-input" type="checkbox" checked>
+                                <label asp-for="IsAvailable" class="form-check-label">Available for booking</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trip Information Preview -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Trip Information Preview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p><strong>Duration:</strong> <span id="duration-preview">0 days</span></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Occupancy Rate:</strong> <span id="occupancy-preview">0%</span></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Total Revenue Potential:</strong> <span id="revenue-preview">$0.00</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="@Url.Action("Index")" class="btn back-btn me-md-2"><i class="fas fa-times me-2"></i>Cancel</a>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus me-2"></i>Create Trip</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Notification -->
+@if (ViewContext.ViewData.ModelState.ContainsKey(""))
+{
+    <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        @Html.ValidationSummary(false, "", new { @class = "m-0" })
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alert after 5 seconds
+        var alert = document.querySelector('.alert');
+        if (alert) {
+            setTimeout(function() {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        }
+
+        // Add validation styling
+        var forms = document.querySelectorAll('form');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+
+        // Update trip information preview when form values change
+        function updateTripPreview() {
+            const startDate = new Date(document.getElementById('StartDate').value);
+            const endDate = new Date(document.getElementById('EndDate').value);
+            const totalSeats = parseInt(document.getElementById('TotalSeats').value) || 0;
+            const availableSeats = parseInt(document.getElementById('AvailableSeats').value) || 0;
+            const price = parseFloat(document.getElementById('Price').value) || 0;
+
+            // Update duration
+            if (startDate && endDate && endDate > startDate) {
+                const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('duration-preview').textContent = duration + ' days';
+            } else {
+                document.getElementById('duration-preview').textContent = '0 days';
+            }
+
+            // Update occupancy rate
+            const bookedSeats = totalSeats - availableSeats;
+            const occupancyRate = totalSeats > 0 ? Math.round((bookedSeats / totalSeats) * 100) : 0;
+            document.getElementById('occupancy-preview').textContent = occupancyRate + '%';
+
+            // Update total revenue potential
+            const totalRevenue = bookedSeats * price;
+            document.getElementById('revenue-preview').textContent = '$' + totalRevenue.toFixed(2);
+        }
+
+        // Validate end date is after start date
+        function validateDates() {
+            const startDate = new Date(document.getElementById('StartDate').value);
+            const endDate = new Date(document.getElementById('EndDate').value);
+
+            if (startDate && endDate && endDate <= startDate) {
+                // Show error
+                if (!document.getElementById('dateError')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.id = 'dateError';
+                    errorDiv.className = 'text-danger small mt-1';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>End date must be after start date';
+                    document.getElementById('EndDate').parentNode.appendChild(errorDiv);
+                }
+            } else {
+                // Remove error if exists
+                const errorDiv = document.getElementById('dateError');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+            }
+        }
+
+        // Validate available seats don't exceed total seats
+        function validateSeats() {
+            const totalSeats = parseInt(document.getElementById('TotalSeats').value) || 0;
+            const availableSeats = parseInt(document.getElementById('AvailableSeats').value) || 0;
+
+            if (availableSeats > totalSeats) {
+                // Show error
+                if (!document.getElementById('seatsError')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.id = 'seatsError';
+                    errorDiv.className = 'text-danger small mt-1';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i>Available seats cannot exceed total seats';
+                    document.getElementById('AvailableSeats').parentNode.appendChild(errorDiv);
+                }
+            } else {
+                // Remove error if exists
+                const errorDiv = document.getElementById('seatsError');
+                if (errorDiv) {
+                    errorDiv.remove();
+                }
+            }
+        }
+
+        // Add event listeners to form elements that affect the preview
+        const previewFields = ['StartDate', 'EndDate', 'TotalSeats', 'AvailableSeats', 'Price'];
+        previewFields.forEach(function(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('input', function() {
+                    updateTripPreview();
+                    if (fieldId === 'StartDate' || fieldId === 'EndDate') validateDates();
+                    if (fieldId === 'TotalSeats' || fieldId === 'AvailableSeats') validateSeats();
+                });
+                field.addEventListener('change', function() {
+                    updateTripPreview();
+                    if (fieldId === 'StartDate' || fieldId === 'EndDate') validateDates();
+                    if (fieldId === 'TotalSeats' || fieldId === 'AvailableSeats') validateSeats();
+                });
+            }
+        });
+
+        // Initialize preview
+        updateTripPreview();
+    });
+</script>
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 1rem 1.5rem;
+        margin: -2rem -2rem 2rem -2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #0d47a1;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #1976d2;
+        box-shadow: 0 0 0 0.25rem rgba(25, 118, 210, 0.25);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #546e7a 0%, #455a64 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .alert-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
+
+    .field-validation-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+
+    .card {
+        border: 1px solid rgba(25, 118, 210, 0.2);
+        border-radius: 10px;
+    }
+
+    .card-header {
+        background: rgba(25, 118, 210, 0.1);
+        border-bottom: 1px solid rgba(25, 118, 210, 0.2);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
+
+    .form-check-input:checked {
+        background-color: #1976d2;
+        border-color: #1976d2;
+    }
+</style>

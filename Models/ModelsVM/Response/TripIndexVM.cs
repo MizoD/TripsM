@@ -1,16 +1,13 @@
 ﻿namespace Models.ModelsVM.Response
 {
-    public class CountryIndexVM
+    public class TripIndexVM
     {
-        public IEnumerable<Country> Countries { get; set; } = new List<Country>();
-        public int TotalTrips { get; set; }
-        public int TotalAirports { get; set; }
+        public IEnumerable<Trip> Trips { get; set; } = new List<Trip>();
+
         public int CurrentPage { get; set; }
         public int PageSize { get; set; }
         public int TotalCount { get; set; }
         public int TotalPages { get; set; }
-
-        
         public string? Search { get; set; }
     }
 }

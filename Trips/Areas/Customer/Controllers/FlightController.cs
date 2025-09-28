@@ -24,8 +24,8 @@ namespace Trips.Areas.Customer.Controllers
             var flights = await unitOfWork.FlightRepository.GetAsync(
                 includes: f => f
                     .Include(f => f.Aircraft)
-                    .Include(f => f.ArrivalAirport)
-                    .Include(f => f.DepartureAirport)
+                    .Include(f => f.ArrivalAirport).ThenInclude(a => a.Country)
+                    .Include(f => f.DepartureAirport).ThenInclude(a => a.Country)
                     .Include(f => f.Trip)
                     .Include(f => f.Bookings)
                     .Include(f => f.Seats));
@@ -41,7 +41,6 @@ namespace Trips.Areas.Customer.Controllers
                 flights = flights.Where(f => f.DepartureTime >= dayStart && f.DepartureTime <= dayEnd);
             }
 
-            // Sorting
             flights = sortBy.ToLower() switch
             {
                 "price" => sortOrder == "desc"
@@ -59,7 +58,6 @@ namespace Trips.Areas.Customer.Controllers
                 _ => flights.OrderBy(f => f.Price)
             };
 
-            // Pagination
             var totalCount = flights.Count();
             var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
 

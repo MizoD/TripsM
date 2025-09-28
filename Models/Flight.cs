@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -37,18 +38,21 @@ namespace Models
             public int DepartureAirportId { get; set; }
 
             [JsonIgnore]
+            [ValidateNever]
             public Airport DepartureAirport { get; set; } = null!;
 
             [Required(ErrorMessage = "Arrival airport is required")]
             public int ArrivalAirportId { get; set; }
 
             [JsonIgnore]
+            [ValidateNever]
             public Airport ArrivalAirport { get; set; } = null!;
 
             [Required(ErrorMessage = "Aircraft is required")]
             public int AirCraftId { get; set; }
 
             [JsonIgnore]
+            [ValidateNever]
             public AirCraft Aircraft { get; set; } = null!;
 
             public int? TripId { get; set; }

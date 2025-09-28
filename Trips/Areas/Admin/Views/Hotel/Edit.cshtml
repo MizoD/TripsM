@@ -1,0 +1,405 @@
+﻿@model Hotel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Hotel";
+    int currentPage = ViewBag.Page;
+    string search = ViewBag.Search;
+}
+
+<!-- Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-hotel me-3"></i>Edit Hotel: @Model.Name</h1>
+                <p class="lead mb-0">Update hotel details in the system</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group">
+                    <a href="@Url.Action("Index", new { page = currentPage, search = search })" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Edit Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-container">
+                <div class="form-header">
+                    <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Hotel Details</h4>
+                </div>
+
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" name="page" value="@currentPage" />
+                    <input type="hidden" name="search" value="@search" />
+
+                    <!-- Validation Summary -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <!-- Read-only information section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Available Rooms</small>
+                                            <p class="mb-0 fw-bold text-success">@Model.AvailableRooms</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Price Per Night</small>
+                                            <p class="mb-0 fw-bold text-info">@Model.PricePerNight.ToString("C")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Traffic</small>
+                                            <p class="mb-0 fw-bold text-warning">@Model.Traffic</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Name" class="form-label">Hotel Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-hotel"></i></span>
+                                <input asp-for="Name" type="text" class="form-control" placeholder="Enter hotel name">
+                            </div>
+                            <span asp-validation-for="Name" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Phone" class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input asp-for="Phone" type="tel" class="form-control" placeholder="Enter phone number">
+                            </div>
+                            <span asp-validation-for="Phone" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter hotel description"></textarea>
+                            </div>
+                            <span asp-validation-for="Description" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="City" class="form-label">City</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-city"></i></span>
+                                <input asp-for="City" type="text" class="form-control" placeholder="Enter city">
+                            </div>
+                            <span asp-validation-for="City" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CountryId" class="form-label">Country</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                <select asp-for="CountryId" asp-items="ViewBag.Countries" class="form-select">
+                                    <option value="">-- Select Country --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="CountryId" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="AvailableRooms" class="form-label">Available Rooms</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-bed"></i></span>
+                                <input asp-for="AvailableRooms" type="number" min="0" class="form-control" placeholder="Enter available rooms">
+                            </div>
+                            <span asp-validation-for="AvailableRooms" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PricePerNight" class="form-label">Price Per Night</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input asp-for="PricePerNight" type="number" min="0" step="0.01" class="form-control" placeholder="Enter price per night">
+                            </div>
+                            <span asp-validation-for="PricePerNight" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="MainImg" class="form-label">Main Image URL</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-image"></i></span>
+                                <input asp-for="MainImg" type="url" class="form-control" placeholder="Enter image URL">
+                            </div>
+                            <span asp-validation-for="MainImg" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TripId" class="form-label">Trip (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-route"></i></span>
+                                <select asp-for="TripId" asp-items="ViewBag.Trips" class="form-select">
+                                    <option value="">-- Select Trip (Optional) --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="TripId" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label class="form-label">Image Preview</label>
+                            <div class="image-preview-container">
+                                <img id="imagePreview" src="@Model.MainImg" alt="Hotel Image Preview" class="img-thumbnail" style="max-height: 200px; display: @(!string.IsNullOrEmpty(Model.MainImg) ? "block" : "none")">
+                                <div id="noImageMessage" class="text-muted text-center p-3 border rounded" style="display: @(string.IsNullOrEmpty(Model.MainImg) ? "block" : "none")">
+                                    <i class="fas fa-image fa-2x mb-2"></i>
+                                    <p class="mb-0">No image preview available</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="@Url.Action("Index", new { page = currentPage, search = search })" class="btn back-btn me-md-2"><i class="fas fa-times me-2"></i>Cancel</a>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Update Hotel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Notification -->
+@if (ViewContext.ViewData.ModelState.ContainsKey(""))
+{
+    <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        @Html.ValidationSummary(false, "", new { @class = "m-0" })
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<script>
+    // Auto-hide alert after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        var alert = document.querySelector('.alert');
+        if (alert) {
+            setTimeout(function() {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        }
+
+        // Add validation styling
+        var forms = document.querySelectorAll('form');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+
+        // Image preview functionality
+        const mainImgInput = document.getElementById('MainImg');
+        const imagePreview = document.getElementById('imagePreview');
+        const noImageMessage = document.getElementById('noImageMessage');
+
+        function updateImagePreview() {
+            const imageUrl = mainImgInput.value;
+
+            if (imageUrl) {
+                imagePreview.src = imageUrl;
+                imagePreview.style.display = 'block';
+                noImageMessage.style.display = 'none';
+
+                // Check if image loads successfully
+                imagePreview.onload = function() {
+                    imagePreview.style.display = 'block';
+                    noImageMessage.style.display = 'none';
+                };
+
+                imagePreview.onerror = function() {
+                    imagePreview.style.display = 'none';
+                    noImageMessage.style.display = 'block';
+                    noImageMessage.innerHTML = '<i class="fas fa-exclamation-triangle fa-2x mb-2"></i><p class="mb-0">Invalid image URL</p>';
+                };
+            } else {
+                imagePreview.style.display = 'none';
+                noImageMessage.style.display = 'block';
+                noImageMessage.innerHTML = '<i class="fas fa-image fa-2x mb-2"></i><p class="mb-0">No image preview available</p>';
+            }
+        }
+
+        if (mainImgInput) {
+            mainImgInput.addEventListener('input', updateImagePreview);
+            // Initialize preview on page load
+            updateImagePreview();
+        }
+
+        // Update traffic based on available rooms
+        const availableRoomsInput = document.getElementById('AvailableRooms');
+        const trafficDisplay = document.querySelector('.card-body .row .col-md-4:last-child p');
+
+        function updateTrafficDisplay() {
+            if (availableRoomsInput && trafficDisplay) {
+                const availableRooms = parseInt(availableRoomsInput.value) || 0;
+
+                // Simple traffic calculation based on available rooms
+                if (availableRooms === 0) {
+                    trafficDisplay.textContent = 'High';
+                    trafficDisplay.className = 'mb-0 fw-bold text-danger';
+                } else if (availableRooms < 10) {
+                    trafficDisplay.textContent = 'Medium';
+                    trafficDisplay.className = 'mb-0 fw-bold text-warning';
+                } else {
+                    trafficDisplay.textContent = 'Low';
+                    trafficDisplay.className = 'mb-0 fw-bold text-success';
+                }
+            }
+        }
+
+        if (availableRoomsInput) {
+            availableRoomsInput.addEventListener('input', updateTrafficDisplay);
+            // Initialize traffic display on page load
+            updateTrafficDisplay();
+        }
+
+        // Format price input to show currency symbol
+        const priceInput = document.getElementById('PricePerNight');
+        if (priceInput) {
+            priceInput.addEventListener('blur', function() {
+                const value = parseFloat(this.value);
+                if (!isNaN(value)) {
+                    this.value = value.toFixed(2);
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 1rem 1.5rem;
+        margin: -2rem -2rem 2rem -2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #0d6efd;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .alert-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+    }
+
+    .image-preview-container {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
+
+    .field-validation-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+</style>

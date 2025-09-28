@@ -1,0 +1,519 @@
+﻿@model FlightIndexVM
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Flight Management";
+}
+
+<!-- Header -->
+<div class="flight-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-plane me-3"></i>Flight Management</h1>
+                <p class="lead mb-0">Manage all flights in the system</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group">
+                    <a href="~/Admin/Flight/Create" class="btn btn-outline-light"><i class="fas fa-plus me-2"></i>Add New Flight</a>
+                    <a href="~/Admin/Flight/Index" class="btn btn-outline-light"><i class="fas fa-sync-alt me-2"></i>Refresh</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Stats and Search -->
+    <div class="row">
+        <div class="col-md-9">
+            <div class="stats-card">
+                <div class="row">
+                    <div class="col-md-3 text-center border-end">
+                        <h3 class="text-primary">@Model.TotalCount</h3>
+                        <p class="text-muted mb-0">Total Flights</p>
+                    </div>
+                    <div class="col-md-3 text-center border-end">
+                        <h3 class="text-success">@Model.UpcomingFlights</h3>
+                        <p class="text-muted mb-0">Upcoming Flights</p>
+                    </div>
+                    <div class="col-md-3 text-center border-end">
+                        <h3 class="text-warning">@Model.PastFlights</h3>
+                        <p class="text-muted mb-0">Past Flights</p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <h3 class="text-info">@Model.Flights.Sum(f => f.AvailableSeats)</h3>
+                        <p class="text-muted mb-0">Available Seats</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="search-container text-center">
+                <form asp-action="Index" method="get" class="input-group">
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Search flights..." value="@Model.Search" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <ul class="nav nav-pills nav-justified filter-tabs">
+                <li class="nav-item">
+                    <a class="nav-link @(Model.Filter == "all" ? "active" : "")"
+                       asp-action="Index"
+                       asp-route-search="@Model.Search"
+                       asp-route-filter="all">
+                        <i class="fas fa-layer-group me-2"></i>All Flights
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(Model.Filter == "upcoming" ? "active" : "")"
+                       asp-action="Index"
+                       asp-route-search="@Model.Search"
+                       asp-route-filter="upcoming">
+                        <i class="fas fa-rocket me-2"></i>Upcoming
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link @(Model.Filter == "past" ? "active" : "")"
+                       asp-action="Index"
+                       asp-route-search="@Model.Search"
+                       asp-route-filter="past">
+                        <i class="fas fa-history me-2"></i>Past
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Flight Cards -->
+    <div class="row">
+        @foreach (var flight in Model.Flights)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card flight-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">@flight.Title</h5>
+                        @{
+                            var statusClass = "bg-secondary";
+                            switch (flight.Status)
+                            {
+                                case FlightStatus.Scheduled:
+                                    statusClass = "bg-info";
+                                    break;
+                                case FlightStatus.Boarding:
+                                    statusClass = "bg-warning";
+                                    break;
+                                case FlightStatus.Departed:
+                                case FlightStatus.InAir:
+                                    statusClass = "bg-primary";
+                                    break;
+                                case FlightStatus.Landed:
+                                    statusClass = "bg-success";
+                                    break;
+                                case FlightStatus.Cancelled:
+                                    statusClass = "bg-danger";
+                                    break;
+                                case FlightStatus.Delayed:
+                                    statusClass = "bg-warning";
+                                    break;
+                            }
+                        }
+                        <span class="badge @statusClass">@flight.Status</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <h6 class="text-muted mb-1">Departure</h6>
+                                <p class="mb-0 fw-bold">@flight.DepartureTime.ToString("MMM dd, yyyy HH:mm")</p>
+                                <small class="text-muted">@flight.DepartureAirport?.Name</small>
+                            </div>
+                            <div class="text-center mx-2">
+                                <i class="fas fa-arrow-right text-primary"></i>
+                                <p class="small mb-0">@flight.Duration.ToString(@"hh\:mm")</p>
+                            </div>
+                            <div class="text-end">
+                                <h6 class="text-muted mb-1">Arrival</h6>
+                                <p class="mb-0 fw-bold">@flight.ArrivalTime.ToString("MMM dd, yyyy HH:mm")</p>
+                                <small class="text-muted">@flight.ArrivalAirport?.Name</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <p class="card-text mb-1"><i class="fas fa-plane me-2 text-primary"></i><strong>Aircraft:</strong></p>
+                                <small class="text-muted">@flight.Aircraft?.Model</small>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p class="card-text mb-1"><i class="fas fa-chair me-2 text-primary"></i><strong>Capacity:</strong></p>
+                                <small class="text-muted">@flight.Aircraft?.Capacity seats</small>
+                            </div>
+                        </div>
+
+                        <div class="progress mb-2" style="height: 8px;">
+                            @{
+                                var occupancyPercentage = flight.TotalSeats > 0 ?
+                                (flight.BookedSeats * 100) / flight.TotalSeats : 0;
+                            }
+                            <div class="progress-bar bg-success" role="progressbar"
+                                 style="width: @occupancyPercentage%"
+                                 aria-valuenow="@occupancyPercentage"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-3">
+                            <span>@flight.AvailableSeats available</span>
+                            <span>@flight.BookedSeats booked</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="card-text mb-0"><i class="fas fa-tag me-2 text-primary"></i><strong>Price:</strong></p>
+                                <span class="fw-bold text-primary">@flight.Price.ToString("C")</span>
+                            </div>
+                            @if (flight.Trip != null)
+                            {
+                                <div class="text-end">
+                                    <p class="card-text mb-0"><i class="fas fa-route me-2 text-primary"></i><strong>Trip:</strong></p>
+                                    <small class="text-muted">@flight.Trip.Title</small>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 pt-0">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <!-- Edit Button -->
+                            <a asp-area="Admin" asp-controller="Flight" asp-action="Edit"
+                               asp-route-id="@flight.Id" asp-route-page="@Model.CurrentPage" asp-route-search="@Model.Search" asp-route-filter="@Model.Filter"
+                               class="btn btn-outline-primary action-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+
+                            <!-- Delete Button -->
+                            <button class="btn btn-outline-danger action-btn delete-btn"
+                                    data-id="@flight.Id"
+                                    data-name="@flight.Title"
+                                    data-page="@Model.CurrentPage"
+                                    data-search="@Model.Search"
+                                    data-filter="@Model.Filter"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- No Results Message -->
+    @if (!Model.Flights.Any())
+    {
+        <div class="row">
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-plane-slash fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No flights found</h4>
+                <p class="text-muted">Try adjusting your search or filter criteria</p>
+                <a asp-action="Index" class="btn btn-primary mt-2">
+                    <i class="fas fa-sync-alt me-2"></i>Reset Filters
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="row pagination-container">
+            <div class="col-12">
+                <nav aria-label="Flight pagination">
+                    <ul class="pagination justify-content-center">
+
+                        <!-- Previous Button -->
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@(Model.CurrentPage - 1)"
+                               asp-route-search="@Model.Search"
+                               asp-route-filter="@Model.Filter">
+                                Previous
+                            </a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-search="@Model.Search"
+                                   asp-route-filter="@Model.Filter">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <!-- Next Button -->
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@(Model.CurrentPage + 1)"
+                               asp-route-search="@Model.Search"
+                               asp-route-filter="@Model.Filter">
+                                Next
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>Are you sure you want to delete flight <strong id="flightName"></strong>?</p>
+                <p class="text-danger small">This action cannot be undone and will also delete all associated seats and bookings.</p>
+            </div>
+
+            <div class="modal-footer">
+                <form id="deleteForm" method="post" asp-action="Delete">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteId" />
+                    <input type="hidden" name="page" id="deletePage" />
+                    <input type="hidden" name="search" id="deleteSearch" />
+                    <input type="hidden" name="filter" id="deleteFilter" />
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Notification -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Success Notification -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<style>
+    .flight-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .flight-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        border: none;
+    }
+
+        .flight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+    .card-header {
+        background: linear-gradient(135deg, #0a58ca 0%, #0d6efd 100%);
+        color: white;
+        border-radius: 10px 10px 0 0 !important;
+        padding: 1rem 1.5rem;
+    }
+
+    .action-btn {
+        margin: 0 3px;
+        border-radius: 5px;
+        font-weight: 500;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .pagination-container {
+        margin-top: 2rem;
+    }
+
+    .modal-header {
+        border-radius: 10px 10px 0 0;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .search-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .filter-tabs .nav-link {
+        color: #5a6d82;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        margin: 0 5px;
+        padding: 12px 20px;
+        font-weight: 500;
+        border: 1px solid #dee2e6;
+        transition: all 0.3s ease;
+    }
+
+        .filter-tabs .nav-link:hover {
+            background-color: #e9ecef;
+            color: #495057;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-tabs .nav-link.active {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(106, 17, 203, 0.4);
+        }
+
+            .filter-tabs .nav-link.active:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 14px rgba(106, 17, 203, 0.5);
+            }
+
+    /* Alternative color scheme option */
+    /*
+        .filter-tabs .nav-link.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff9e7d 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .filter-tabs .nav-link.active:hover {
+            box-shadow: 0 6px 14px rgba(255, 107, 107, 0.5);
+        }
+        */
+
+    .alert-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: none;
+        border-radius: 8px;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+
+    .modal-backdrop {
+        z-index: 1040 !important;
+    }
+
+    .modal {
+        z-index: 1060 !important;
+    }
+
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.35em 0.65em;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Delete Modal functionality
+        const deleteModal = document.getElementById("deleteModal");
+        deleteModal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget;
+            const id = button.getAttribute("data-id");
+            const name = button.getAttribute("data-name");
+            const page = button.getAttribute("data-page");
+            const search = button.getAttribute("data-search");
+            const filter = button.getAttribute("data-filter");
+
+            document.getElementById("deleteId").value = id;
+            document.getElementById("deletePage").value = page;
+            document.getElementById("deleteSearch").value = search;
+            document.getElementById("deleteFilter").value = filter;
+            document.getElementById("flightName").textContent = name;
+        });
+
+        // Auto-hide alerts
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function () {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        });
+    });
+</script>

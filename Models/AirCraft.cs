@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace Models
@@ -22,6 +23,7 @@ namespace Models
 
         public int AirportId { get; set; }
         [JsonIgnore]
+        [ValidateNever] 
         public Airport Airport { get; set; } = null!;
     }
 }

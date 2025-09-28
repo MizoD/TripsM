@@ -1,0 +1,420 @@
+﻿@model UserIndexVM
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "User Management";
+}
+
+<!-- Header -->
+<div class="user-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-users me-3"></i>User Management</h1>
+                <p class="lead mb-0">Manage all users in the system</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group">
+                    <a href="~/Admin/User/Create" class="btn btn-outline-light"><i class="fas fa-plus me-2"></i>Add New User</a>
+                    <a href="~/Admin/User/Index" class="btn btn-outline-light"><i class="fas fa-sync-alt me-2"></i>Refresh</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Stats and Search -->
+    <div class="row">
+        <div class="col-md-9">
+            <div class="stats-card">
+                <div class="row">
+                    <div class="col-md-3 text-center border-end">
+                        <h3 class="text-primary">@Model.TotalCount</h3>
+                        <p class="text-muted mb-0">Total Users</p>
+                    </div>
+                    <div class="col-md-3 text-center border-end">
+                        <h3 class="text-success">@Model.Users.Count(u => u.LastLogin.HasValue && u.LastLogin.Value.Date == DateTime.Today)</h3>
+                        <p class="text-muted mb-0">Active Today</p>
+                    </div>
+                    <div class="col-md-3 text-center border-end">
+                        <h3 class="text-warning">@Model.Users.Count(u => !u.LastLogin.HasValue || u.LastLogin.Value.Date < DateTime.Today.AddDays(-7))</h3>
+                        <p class="text-muted mb-0">Inactive Users</p>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <h3 class="text-info">@Model.Users.Sum(u => u.Bookings.Count)</h3>
+                        <p class="text-muted mb-0">Total Bookings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="search-container text-center">
+                <form asp-action="Index" method="get" class="input-group">
+                    <input type="text" name="search" class="form-control"
+                           placeholder="Search users..." value="@Model.Search" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Cards -->
+    <div class="row">
+        @foreach (var user in Model.Users)
+        {
+            if (user.UserName == "SuperAdmin") { continue; }
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card user-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">@user.FirstName @user.LastName</h5>
+                        <div>
+                            @{
+                                var statusClass = user.EmailConfirmed ? "bg-success" : "bg-warning";
+                                var statusText = user.EmailConfirmed ? "Verified" : "Unverified";
+                                var isBlocked = user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.Now;
+                                var blockClass = isBlocked ? "bg-danger" : "bg-secondary";
+                                var blockText = isBlocked ? "Blocked" : "Active";
+                            }
+                            <span class="badge @blockClass me-1">@blockText</span>
+                            <span class="badge @statusClass">@statusText</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <div>
+                                <h6 class="text-muted mb-1">Username</h6>
+                                <p class="mb-0 fw-bold">@user.UserName</p>
+                                <small class="text-muted">@user.Email</small>
+                            </div>
+                            <div class="text-center mx-2">
+                                <i class="fas fa-user text-primary"></i>
+                                <p class="small mb-0">Member</p>
+                            </div>
+                            <div class="text-end">
+                                <h6 class="text-muted mb-1">Joined</h6>
+                                <p class="mb-0 fw-bold">@user.RegistrationDate.ToString("MMM dd, yyyy")</p>
+                                <small class="text-muted">@user.RegistrationDate.ToString("HH:mm")</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <p class="card-text mb-1"><i class="fas fa-calendar me-2 text-primary"></i><strong>Last Login:</strong></p>
+                                <small class="text-muted">
+                                    @if (user.LastLogin.HasValue)
+                                    {
+                                        @user.LastLogin.Value.ToString("MMM dd, yyyy HH:mm")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Never</span>
+                                    }
+                                </small>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p class="card-text mb-1"><i class="fas fa-map-marker-alt me-2 text-primary"></i><strong>Location:</strong></p>
+                                <small class="text-muted">
+                                    @if (!string.IsNullOrEmpty(user.Address))
+                                    {
+                                        @user.Address
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not specified</span>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="progress mb-2" style="height: 8px;">
+                            @{
+                                var totalPossibleBookings = 10;
+                                var userBookings = user.Bookings.Count;
+                                var activityPercentage = Math.Min((userBookings * 100) / totalPossibleBookings, 100);
+                            }
+                            <div class="progress-bar @(activityPercentage >= 80 ? "bg-success" : activityPercentage >= 50 ? "bg-warning" : "bg-info")"
+                                 role="progressbar"
+                                 style="width: @activityPercentage%"
+                                 aria-valuenow="@activityPercentage"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mb-3">
+                            <span>@user.Bookings.Count bookings</span>
+                            <span>@user.Reviews.Count reviews</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="card-text mb-0"><i class="fas fa-phone me-2 text-primary"></i><strong>Phone:</strong></p>
+                                <span class="fw-bold text-primary">@(user.PhoneNumber ?? "Not set")</span>
+                            </div>
+                            <div class="text-end">
+                                <p class="card-text mb-0"><i class="fas fa-star me-2 text-primary"></i><strong>Activity:</strong></p>
+                                <small class="text-muted">
+                                    @if (user.LastLogin.HasValue && user.LastLogin.Value.Date == DateTime.Today)
+                                    {
+                                        <span class="text-success">Active today</span>
+                                    }
+                                    else if (user.LastLogin.HasValue && user.LastLogin.Value.Date >= DateTime.Today.AddDays(-7))
+                                    {
+                                        <span class="text-warning">Active this week</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Inactive</span>
+                                    }
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white border-0 pt-0">
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <!-- Block/Unblock Button -->
+                            <form asp-action="Block" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <input type="hidden" name="page" value="@Model.CurrentPage" />
+                                <input type="hidden" name="search" value="@Model.Search" />
+                                @if (user.LockoutEnabled && user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTimeOffset.Now)
+                                {
+                                    <button type="submit" class="btn btn-outline-warning action-btn" title="Unblock User">
+                                        <i class="fas fa-unlock me-1"></i> Unblock
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-outline-danger action-btn" title="Block User">
+                                        <i class="fas fa-ban me-1"></i> Block
+                                    </button>
+                                }
+                            </form>
+
+                            <!-- Edit Button -->
+                            <a asp-area="Admin" asp-controller="User" asp-action="Edit"
+                               asp-route-id="@user.Id" asp-route-page="@Model.CurrentPage" asp-route-search="@Model.Search"
+                               class="btn btn-outline-primary action-btn">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+
+                            <!-- Delete Button -->
+                            <form asp-action="Delete" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <input type="hidden" name="page" value="@Model.CurrentPage" />
+                                <input type="hidden" name="search" value="@Model.Search" />
+                                <button type="submit" class="btn btn-outline-danger action-btn"
+                                        onclick="return confirm('Are you sure you want to delete user @user.FirstName @user.LastName? This action cannot be undone.')"
+                                        title="Delete User">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- No Results Message -->
+    @if (!Model.Users.Any())
+    {
+        <div class="row">
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">No users found</h4>
+                <p class="text-muted">Try adjusting your search criteria</p>
+                <a asp-action="Index" class="btn btn-primary mt-2">
+                    <i class="fas fa-sync-alt me-2"></i>Reset Search
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- Pagination -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="row pagination-container">
+            <div class="col-12">
+                <nav aria-label="User pagination">
+                    <ul class="pagination justify-content-center">
+
+                        <!-- Previous Button -->
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@(Model.CurrentPage - 1)"
+                               asp-route-search="@Model.Search">
+                                Previous
+                            </a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-search="@Model.Search">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <!-- Next Button -->
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@(Model.CurrentPage + 1)"
+                               asp-route-search="@Model.Search">
+                                Next
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Error Notification -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Success Notification -->
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<style>
+    .user-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .user-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        border: none;
+    }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+    .card-header {
+        background: linear-gradient(135deg, #0a58ca 0%, #0d6efd 100%);
+        color: white;
+        border-radius: 10px 10px 0 0 !important;
+        padding: 1rem 1.5rem;
+    }
+
+    .action-btn {
+        margin: 0 3px;
+        border-radius: 5px;
+        font-weight: 500;
+        font-size: 0.8rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .pagination-container {
+        margin-top: 2rem;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .search-container {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .alert-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: none;
+        border-radius: 8px;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+    }
+
+    .modal-backdrop {
+        z-index: 1040 !important;
+    }
+
+    .modal {
+        z-index: 1060 !important;
+    }
+
+    .status-badge {
+        font-size: 0.8rem;
+        padding: 0.35em 0.65em;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Auto-hide alerts
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function () {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        });
+    });
+</script>

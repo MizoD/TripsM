@@ -1,0 +1,435 @@
+﻿@model Review
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Edit Review";
+    int currentPage = ViewBag.Page;
+    string search = ViewBag.Search;
+}
+
+<!-- Header -->
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1><i class="fas fa-star me-3"></i>Edit Review: @Model.User.UserName for @Model.Trip.Title</h1>
+                <p class="lead mb-0">Update review details in the system</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <div class="btn-group">
+                    <a href="@Url.Action("Index", new { page = currentPage, search = search })" class="btn btn-outline-light"><i class="fas fa-arrow-left me-2"></i>Back to List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Edit Form -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-container">
+                <div class="form-header">
+                    <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Review Details</h4>
+                </div>
+
+                <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" name="page" value="@currentPage" />
+                    <input type="hidden" name="search" value="@search" />
+
+                    <!-- Validation Summary -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <!-- Read-only information section -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card bg-light">
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Review Date</small>
+                                            <p class="mb-0 fw-bold text-success">@Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Current Rating</small>
+                                            <p class="mb-0 fw-bold text-info">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    <i class="fas fa-star @(i <= Model.Rating ? "text-warning" : "text-muted")"></i>
+                                                }
+                                                (@Model.Rating/5)
+                                            </p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <small class="text-muted">Comment Length</small>
+                                            <p class="mb-0 fw-bold text-warning">@(Model.Comment?.Length ?? 0) characters</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="UserId" class="form-label">User</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <select asp-for="UserId" asp-items="ViewBag.Users" class="form-select">
+                                    <option value="">-- Select User --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="UserId" class="field-validation-error"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="TripId" class="form-label">Trip</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-route"></i></span>
+                                <select asp-for="TripId" asp-items="ViewBag.Trips" class="form-select">
+                                    <option value="">-- Select Trip --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="TripId" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Rating" class="form-label">Rating</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-star"></i></span>
+                                <select asp-for="Rating" class="form-select" id="ratingSelect">
+                                    <option value="1">1 Star - Poor</option>
+                                    <option value="2">2 Stars - Fair</option>
+                                    <option value="3">3 Stars - Good</option>
+                                    <option value="4">4 Stars - Very Good</option>
+                                    <option value="5">5 Stars - Excellent</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="Rating" class="field-validation-error"></span>
+
+                            <!-- Star Rating Visual -->
+                            <div class="mt-3 text-center">
+                                <div class="star-rating-visual mb-2">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="fas fa-star fa-2x rating-star" data-value="@i"></i>
+                                    }
+                                </div>
+                                <small class="text-muted" id="ratingDescription">Click stars or select from dropdown</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Comment" class="form-label">Comment</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-comment"></i></span>
+                                <textarea asp-for="Comment" class="form-control" rows="6" placeholder="Enter review comment (optional, max 1000 characters)" id="commentTextarea"></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <span asp-validation-for="Comment" class="field-validation-error"></span>
+                                <small class="text-muted">
+                                    <span id="charCount">0</span>/1000 characters
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Comment Preview -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label class="form-label">Comment Preview</label>
+                            <div class="comment-preview-container bg-light p-3 rounded">
+                                <div id="commentPreview" class="comment-preview">
+                                    @if (!string.IsNullOrEmpty(Model.Comment))
+                                    {
+                                        @Model.Comment
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No comment preview available</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="@Url.Action("Index", new { page = currentPage, search = search })" class="btn back-btn me-md-2"><i class="fas fa-times me-2"></i>Cancel</a>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Update Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Notification -->
+@if (ViewContext.ViewData.ModelState.ContainsKey(""))
+{
+    <div class="alert alert-danger alert-dismissible fade show alert-notification" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        @Html.ValidationSummary(false, "", new { @class = "m-0" })
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<script>
+    // Auto-hide alert after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        var alert = document.querySelector('.alert');
+        if (alert) {
+            setTimeout(function() {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        }
+
+        // Add validation styling
+        var forms = document.querySelectorAll('form');
+        forms.forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+        });
+
+        // Star rating functionality
+        const ratingSelect = document.getElementById('ratingSelect');
+        const ratingStars = document.querySelectorAll('.rating-star');
+        const ratingDescription = document.getElementById('ratingDescription');
+
+        function updateStarRating(rating) {
+            ratingStars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('text-warning');
+                    star.classList.remove('text-muted');
+                } else {
+                    star.classList.remove('text-warning');
+                    star.classList.add('text-muted');
+                }
+            });
+
+            // Update description
+            const descriptions = {
+                1: 'Poor - Very dissatisfied',
+                2: 'Fair - Some issues',
+                3: 'Good - Met expectations',
+                4: 'Very Good - Exceeded expectations',
+                5: 'Excellent - Outstanding experience'
+            };
+            ratingDescription.textContent = descriptions[rating] || 'Click stars or select from dropdown';
+        }
+
+        // Initialize with current rating
+        updateStarRating(@Model.Rating);
+
+        // Star click event
+        ratingStars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-value'));
+                ratingSelect.value = rating;
+                updateStarRating(rating);
+            });
+        });
+
+        // Dropdown change event
+        ratingSelect.addEventListener('change', function() {
+            updateStarRating(parseInt(this.value));
+        });
+
+        // Character count for comment
+        const commentTextarea = document.getElementById('commentTextarea');
+        const charCount = document.getElementById('charCount');
+        const commentPreview = document.getElementById('commentPreview');
+
+        function updateCharCount() {
+            const length = commentTextarea.value.length;
+            charCount.textContent = length;
+
+            if (length > 1000) {
+                charCount.classList.add('text-danger');
+            } else {
+                charCount.classList.remove('text-danger');
+            }
+        }
+
+        function updateCommentPreview() {
+            if (commentTextarea.value.trim()) {
+                commentPreview.textContent = commentTextarea.value;
+                commentPreview.classList.remove('text-muted');
+            } else {
+                commentPreview.innerHTML = '<span class="text-muted">No comment preview available</span>';
+            }
+        }
+
+        if (commentTextarea) {
+            commentTextarea.addEventListener('input', function() {
+                updateCharCount();
+                updateCommentPreview();
+            });
+
+            // Initialize on page load
+            updateCharCount();
+            updateCommentPreview();
+        }
+
+        // Hover effects for stars
+        ratingStars.forEach(star => {
+            star.addEventListener('mouseenter', function() {
+                const hoverRating = parseInt(this.getAttribute('data-value'));
+                ratingStars.forEach((s, index) => {
+                    if (index < hoverRating) {
+                        s.classList.add('text-warning');
+                        s.classList.remove('text-muted');
+                    }
+                });
+            });
+
+            star.addEventListener('mouseleave', function() {
+                const currentRating = parseInt(ratingSelect.value);
+                updateStarRating(currentRating);
+            });
+        });
+    });
+</script>
+
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 10px 10px;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+        padding: 1rem 1.5rem;
+        margin: -2rem -2rem 2rem -2rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #ff9800;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #ff9800 0%, #ffc107 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #f57c00 0%, #ffb300 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 152, 0, 0.3);
+        }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #ff9800;
+        box-shadow: 0 0 0 0.25rem rgba(255, 152, 0, 0.25);
+    }
+
+    .back-btn {
+        background: linear-gradient(135deg, #78909c 0%, #546e7a 100%);
+        border: none;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, #546e7a 0%, #455a64 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .alert-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1050;
+        animation: fadeIn 0.5s, fadeOut 0.5s 2.5s;
+    }
+
+    .star-rating-visual {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .rating-star {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .rating-star:hover {
+            transform: scale(1.2);
+        }
+
+    .comment-preview-container {
+        min-height: 100px;
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+    }
+
+    .comment-preview {
+        white-space: pre-wrap;
+        line-height: 1.5;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes fadeOut {
+        from {
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+    }
+
+    .field-validation-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+
+    .text-warning {
+        color: #ffc107 !important;
+    }
+</style>
