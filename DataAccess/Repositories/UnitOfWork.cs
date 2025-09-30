@@ -15,7 +15,7 @@ namespace DataAccess.Repositories
                         ITripRepository tripRepository, ITripCartRepository tripCartRepository,ApplicationDbContext dbContext, 
                         IFlightCartRepository flightCartRepository, IHotelCartRepository hotelCartRepository, ITripWishlistRepository tripWishlistRepository,
                         IHotelWishlistRepository hotelWishlistRepository, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager
-                        , RoleManager<IdentityRole> roleManager)
+                        , RoleManager<IdentityRole> roleManager, ISubscriberRepository subscriberRepository)
         {
             ApplicationUserOTPRepository = applicationUserOTPRepository;
             AirCraftRepository = airCraftRepository;
@@ -38,6 +38,7 @@ namespace DataAccess.Repositories
             UserManager = userManager;
             SignInManager = signInManager;
             RoleManager = roleManager;
+            SubscriberRepository = subscriberRepository;
         }
 
         public IApplicationUserOTPRepository ApplicationUserOTPRepository { get; }
@@ -60,6 +61,7 @@ namespace DataAccess.Repositories
         public UserManager<ApplicationUser> UserManager { get; }
         public SignInManager<ApplicationUser> SignInManager { get; }
         public RoleManager<IdentityRole> RoleManager { get; }
+        public ISubscriberRepository SubscriberRepository { get; }
 
         public async Task<bool> CommitAsync()
         {

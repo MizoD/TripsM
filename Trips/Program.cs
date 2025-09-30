@@ -27,7 +27,7 @@ namespace Trips
                 .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            builder.Services.AddScoped<IDbInitializer, DbInitializer>();
+            builder.Services.AddScoped<IDbInitializer, DbInitializer>();    
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IApplicationUserOTPRepository, ApplicationUserOTPRepository>();
@@ -41,6 +41,7 @@ namespace Trips
             builder.Services.AddScoped<ISeatRepository, SeatRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
             builder.Services.AddScoped<ITripRepository, TripRepository>();
+            builder.Services.AddScoped<ISubscriberRepository, SubscriberRepository>();
             builder.Services.AddScoped<ITripCartRepository, TripCartRepository>();
             builder.Services.AddScoped<IFlightCartRepository, FlightCartRepository>();
             builder.Services.AddScoped<IHotelCartRepository, HotelCartRepository>();

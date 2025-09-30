@@ -28,9 +28,9 @@ namespace DataAccess
         public DbSet<Hotel> Hotels { get; set; }
         public DbSet<Seat> Seats { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<Passenger> Passengers { get; set; }
         public DbSet<HotelImage> HotelImages { get; set; }
         public DbSet<Trip> TripImages { get; set; }
+        public DbSet<NewsletterSubscriber> NewsletterSubscribers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

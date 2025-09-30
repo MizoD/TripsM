@@ -1,263 +1,739 @@
 ﻿@model HomeVM
-
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Home - Discover Your Next Adventure";
 }
 
-<div class="container">
-    <!-- Hero Section -->
-    <section id="home" class="hero-section text-white h-[60vh] flex flex-col items-center justify-center text-center p-4">
-        <div class="bg-black/40 p-8 rounded-xl">
-
-            <h1 class="text-4xl md:text-6xl font-bold mb-4">Discover Your Next Adventure</h1>
-            <h2 class="sec__title">
-                Amazing
-                <span class="cd-words-wrapper red">
-                    <b class="is-visible font-bold">Tours</b>
-                    <b>Adventures</b>
-                    <b>Flights</b>
-                    <b>Hotels</b>
-                    <b>Package Deals</b>
-                    <b>Fun</b>
-                    <b>People</b>
-                </span>
-                Waiting for You
-            </h2>
+<!-- Hero Section -->
+<section class="hero-section relative min-h-screen flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-purple-900/80 z-0"></div>
+    <div class="absolute inset-0">
+        <div class="hero-slider">
+            <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"></div>
+            <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-4.0.3&auto=format&fit=crop&w=2068&q=80')"></div>
         </div>
-        <p class="text-lg md:text-xl max-w-2xl">Book flights, find packages, and explore the world with us.</p>
-    </section>
+    </div>
 
-    <!-- Flight Search Section -->
-    <section id="flights" class="container mx-auto px-6 py-12 -mt-20 relative">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
-            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Search for Flights <i class="fas fa-search ml-2"></i></h2>
-            <form class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
-                <div class="space-y-2">
-                    <label for="from" class="block font-medium text-gray-700">From</label>
-                    <select id="from" name="From"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600
-               bg-white dark:bg-gray-700 rounded-lg focus:ring-2
-               focus:ring-blue-500 focus:border-blue-500 transition
-               appearance-none relative">
-                        <option value="" disabled selected hidden>Select a country</option>
-                        @foreach (var country in Model.AirportsName as List<string>)
+    <div class="container mx-auto px-6 relative z-10 text-center text-white">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 animate-fade-in-up">
+                Discover Your Next
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
+                    Adventure
+                </span>
+            </h1>
+
+            <div class="rotating-words text-2xl md:text-3xl font-light mb-8 h-12">
+                <span class="word active">Amazing Tours</span>
+                <span class="word">Unforgettable Adventures</span>
+                <span class="word">Luxury Flights</span>
+                <span class="word">Beautiful Hotels</span>
+                <span class="word">Package Deals</span>
+            </div>
+
+            <p class="text-xl md:text-2xl mb-8 opacity-90 max-w-3xl mx-auto">
+                Book flights, find perfect stays, and explore the world with exclusive deals tailored for you.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a asp-area="Customer" asp-controller="Flight" asp-action="Index" class="btn-primary animate-bounce-slow">
+                    <i class="fas fa-plane-departure mr-2"></i>Book Flights
+                </a>
+                <a asp-area="Customer" asp-controller="Hotel" asp-action="Index" class="btn-secondary">
+                    <i class="fas fa-hotel mr-2"></i>Find Hotels
+                </a>
+                <a asp-area="Customer" asp-controller="Trip" asp-action="Index" class="btn-accent">
+                    <i class="fas fa-suitcase-rolling mr-2"></i>Explore Trips
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <a href="#flights" class="text-white text-2xl">
+            <i class="fas fa-chevron-down"></i>
+        </a>
+    </div>
+</section>
+
+<!-- Flight Search Section -->
+<section id="flights" class="section-padding">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="section-title">Find Your Perfect Flight</h2>
+            <p class="section-subtitle">Search and compare flights from hundreds of airlines</p>
+        </div>
+
+        <div class="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 transform hover:scale-[1.02] transition-transform duration-300">
+            <form asp-area="Customer" asp-controller="Flight" asp-action="Index" method="get" 
+                    class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+                <div class="form-group">
+                    <label for="from" class="form-label">From</label>
+                    <select id="from" name="from" class="form-select">
+                        <option value="" disabled selected hidden>Select departure</option>
+                        @foreach (var country in Model.AirportsName)
                         {
                             <option value="@country">@country</option>
                         }
                     </select>
                 </div>
 
-                <div class="space-y-2">
-                    <label for="to" class="block font-medium text-gray-700">To</label>
-                    <select id="to" name="To"
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600
-               bg-white dark:bg-gray-700 rounded-lg focus:ring-2
-               focus:ring-blue-500 focus:border-blue-500 transition
-               appearance-none relative">
-                        <option value="" disabled selected hidden>Select a country</option>
-                        @foreach (var country in Model.AirportsName as List<string>)
+                <div class="form-group">
+                    <label for="country" class="form-label">To</label>
+                    <select id="country" name="country" class="form-select">
+                        <option value="" disabled selected hidden>Select destination</option>
+                        @foreach (var country in Model.AirportsName)
                         {
                             <option value="@country">@country</option>
                         }
                     </select>
                 </div>
-                <div class="space-y-2">
-                    <label for="departure" class="block font-medium text-gray-700 dark">Departure</label>
-                    <input type="date" id="departure" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+
+                <div class="form-group">
+                    <label for="departure" class="form-label">Departure</label>
+                    <input type="date" id="departure" name="departureDate" class="form-input">
                 </div>
-                <div class="space-y-2">
-                    <label for="return" class="block font-medium text-gray-700 dark">Return</label>
-                    <input type="date" id="return" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+
+                <div class="form-group">
+                    <label for="return" class="form-label">Return</label>
+                    <input type="date" id="return" name="returnDate" class="form-input">
                 </div>
-                <button type="submit" class="w-full bg-blue-600 text-white font-bold px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300 col-span-1 md:col-span-2 lg:col-span-1">
-                    Search
+
+                <button type="submit" class="btn-primary lg:col-span-1 md:col-span-2">
+                    <i class="fas fa-search mr-2"></i>Search Flights
                 </button>
             </form>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Top Destinations Section -->
-    <section id="destinations" class="py-12">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Top Destinations</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Cards will be dynamically inserted here if needed, or static like below -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
-                    <img src="https://placehold.co/600x400/3498db/FFFFFF?text=Paris" alt="Paris" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Paris, France</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">The city of love, lights, and art.</p>
-                    </div>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
-                    <img src="https://placehold.co/600x400/red/FFFFFF?text=Rome" alt="Rome" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Rome, Italy</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Explore ancient history and savor amazing pasta.</p>
-                    </div>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
-                    <img src="https://placehold.co/600x400/2ecc71/FFFFFF?text=Tokyo" alt="Tokyo" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Tokyo, Japan</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">A vibrant mix of tradition and futuristic technology.</p>
-                    </div>
-                </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg transform hover:-translate-y-2 transition-transform duration-300">
-                    <img src="https://placehold.co/600x400/f1c40f/FFFFFF?text=Sydney" alt="Sydney" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 dark:text-white">Sydney, Australia</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mt-2">Famous for its harbourfront opera house.</p>
-                    </div>
-                </div>
-            </div>
+<!-- Upcoming Flights Section -->
+<section class="section-padding bg-gray-50 dark:bg-gray-900">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="section-title">Upcoming Flights</h2>
+            <p class="section-subtitle">Don't miss these great flight deals</p>
         </div>
-    </section>
-    
-    <!-- Hotels -->
-    <section id="hotels" class="py-12 bg-gray-100 dark:bg-gray-900">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">
-                Available Hotels
-            </h2>
 
-            <!-- Slider Wrapper -->
-            <div class="relative overflow-hidden">
-                @if (Model.Hotels.Count > 0)
+        <div class="flights-carousel relative">
+            <div class="flights-container flex gap-6 overflow-x-auto pb-6 scrollbar-hide" id="flightsContainer">
+                @foreach (var flight in Model.UpcomingFlights)
                 {
-                    <div id="hotelSlider" class="flex gap-6 transition-transform duration-500">
-                        @foreach (var hotel in Model.Hotels)  // Assuming Model.Hotels is your list
-                        {
-                            <div class="min-w-[300px] max-w-[300px] bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg flex-shrink-0">
-                                <img src="https://placehold.co/600x400?text=@hotel.City"
-                                     alt="@hotel.Name"
-                                     class="w-full h-40 object-cover">
-                                <div class="p-4">
-                                    <h3 class="text-xl font-semibold text-gray-800 dark:text-white">@hotel.Name</h3>
-                                    <p class="text-gray-600 dark:text-gray-400 mt-1">@hotel.Description</p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                                        📍 @hotel.City, @hotel.Country?.Name
-                                    </p>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        ☎️ @hotel.Phone
-                                    </p>
-                                    <p class="mt-2 font-bold text-indigo-600 dark:text-indigo-400">
-                                        $@hotel.PricePerNight / night
-                                    </p>
-                                    <p class="text-sm text-gray-500">
-                                        Rooms Available: @hotel.AvailableRooms
-                                    </p>
+                    <div class="flight-card min-w-[320px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800 dark:text-white">@flight.Title</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">@flight.DepartureAirport?.Name - @flight.ArrivalAirport?.Name</p>
+                                </div>
+                                <span class="status-badge @(flight.Status.ToString().ToLower())">@flight.Status</span>
+                            </div>
+
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-blue-600">@flight.DepartureTime.ToString("HH:mm")</div>
+                                    <div class="text-xs text-gray-600">@flight.DepartureAirport?.City</div>
+                                </div>
+
+                                <div class="flex-1 px-4 text-center">
+                                    <div class="text-sm text-gray-600 mb-1">@flight.Duration.Hours h @flight.Duration.Minutes m</div>
+                                    <div class="relative">
+                                        <div class="h-1 bg-gray-300 rounded-full"></div>
+                                        <div class="absolute top-0 left-0 h-1 bg-blue-600 rounded-full w-full"></div>
+                                        <i class="fas fa-plane absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-600 text-sm"></i>
+                                    </div>
+                                </div>
+
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600">@flight.ArrivalTime.ToString("HH:mm")</div>
+                                    <div class="text-xs text-gray-600">@flight.ArrivalAirport?.City</div>
                                 </div>
                             </div>
-                        }
-                    </div>
-                }
-                else
-                {
 
-                    <div class="flex items-center justify-center h-screen">
-                        <p class="font-bold text-lg">There is no Hotels to show.</p>
-                    </div>
-                }
-                <!-- Navigation Buttons -->
-                <button id="prevHotel"
-                        class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-full">
-                    ‹
-                </button>
-                <button id="nextHotel"
-                        class="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-full">
-                    ›
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Reviews -->
-    <section id="reviews" class="py-12">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">
-                What Our Users Say
-            </h2>
-
-            <!-- Slider Wrapper -->
-            <div class="relative overflow-hidden">
-                @if (Model.Reviews != null && Model.Reviews.Count > 0)
-                {
-                    <div id="reviewSlider" class="flex gap-6 transition-transform duration-500">
-                        @foreach (var review in Model.Reviews)
-                        {
-                            <div class="min-w-[300px] max-w-[300px] bg-gray-100 dark:bg-gray-900 rounded-lg shadow-lg p-6 flex-shrink-0">
-                                <div class="flex items-center justify-between mb-3">
-                                    <span class="font-bold text-gray-800 dark:text-white">
-                                        @review.User?.UserName
-                                    </span>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">
-                                        @review.CreatedAt.ToString("MMM dd, yyyy")
-                                    </span>
+                            <div class="flex justify-between items-center">
+                                <div class="text-lg font-bold text-gray-800 dark:text-white">
+                                    $@flight.Price.ToString("N2")
                                 </div>
-
-                                <!-- Rating Stars -->
-                                <div class="flex mb-3">
-                                    @for (int i = 1; i <= 5; i++)
-                                    {
-                                        if (i <= review.Rating)
-                                        {
-                                            <span class="text-yellow-400">★</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-gray-400">★</span>
-                                        }
-                                    }
-                                </div>
-
-                                <p class="text-gray-700 dark:text-gray-300 italic">
-                                    "@review.Comment"
-                                </p>
+                                <a asp-controller="Flight" asp-action="Details" asp-route-id="@flight.Id" class="btn-primary btn-sm">
+                                    <i class="fas fa-shopping-cart mr-1"></i>Book Now
+                                </a>
                             </div>
-                        }
+                        </div>
                     </div>
                 }
-                else
+            </div>
+
+            <button class="carousel-nav prev" id="prevFlight">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-nav next" id="nextFlight">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Trips Section -->
+<section id="trips" class="section-padding">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="section-title">Featured Trips</h2>
+            <p class="section-subtitle">Curated experiences for unforgettable memories</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            @foreach (var trip in Model.FeaturedTrips)
+            {
+                <div class="trip-card group bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300">
+                    <div class="relative overflow-hidden">
+                        <img src="@(trip.ImageUrl ?? "https://images.unsplash.com/photo-1488646953014-85cb44e25828?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80")"
+                             alt="@trip.Title"
+                             class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute top-4 right-4">
+                            <span class="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                @trip.TripType
+                            </span>
+                        </div>
+                        <div class="absolute bottom-4 left-4">
+                            <div class="flex items-center text-white">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="font-semibold">@trip.Rate.ToString("N1")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">@trip.Title</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">@trip.Description</p>
+
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                <span>@trip.DurationDays days</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                <i class="fas fa-users mr-2"></i>
+                                <span>@trip.AvailableSeats left</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="text-2xl font-bold text-green-600">
+                                $@trip.Price.ToString("N2")
+                            </div>
+                            <a asp-controller="Trip" asp-action="Details" asp-route-id="@trip.Id" class="btn-primary btn-sm">
+                                <i class="fas fa-eye mr-1"></i>View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Hotels Section -->
+<section id="hotels" class="section-padding bg-gray-50 dark:bg-gray-900">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="section-title">Featured Hotels</h2>
+            <p class="section-subtitle">Luxury stays at unbeatable prices</p>
+        </div>
+
+        <div class="hotels-carousel relative">
+            <div class="hotels-container flex gap-6 overflow-x-auto pb-6 scrollbar-hide" id="hotelsContainer">
+                @foreach (var hotel in Model.Hotels)
                 {
-                    <div class="flex items-center justify-center h-48">
-                        <p class="font-bold text-lg text-gray-600 dark:text-gray-300">
-                            No reviews yet. Be the first to share your experience!
+                    <div class="hotel-card min-w-[300px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <div class="relative">
+                            <img src=@hotel.MainImg
+                                 alt="@hotel.Name"
+                                 class="w-full h-48 object-cover">
+                            <div class="absolute top-4 right-4">
+                                <span class="bg-green-600 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                                    @hotel.AvailableRooms rooms left
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">@hotel.Name</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">@hotel.Description</p>
+
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-map-marker-alt mr-2 text-red-500"></i>
+                                    <span>@hotel.City, @hotel.Country?.Name</span>
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                                    <i class="fas fa-phone mr-2 text-green-500"></i>
+                                    <span>@hotel.Phone</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                    $@hotel.PricePerNight.ToString("N2")<span class="text-sm font-normal text-gray-600">/night</span>
+                                </div>
+                                <a asp-controller="Hotel" asp-action="Details" asp-route-id="@hotel.Id" class="btn-primary btn-sm">
+                                    <i class="fas fa-bookmark mr-1"></i>Book
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <button class="carousel-nav prev" id="prevHotel">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-nav next" id="nextHotel">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Section -->
+<section id="reviews" class="section-padding">
+    <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="section-title">What Travelers Say</h2>
+            <p class="section-subtitle">Real experiences from our community</p>
+        </div>
+
+        <div class="reviews-carousel relative">
+            <div class="reviews-container flex gap-6 overflow-x-auto pb-6 scrollbar-hide" id="reviewsContainer">
+                @foreach (var review in Model.Reviews)
+                {
+                    <div class="review-card min-w-[320px] bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transform hover:scale-105 transition-transform duration-300">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
+                                @review.User?.UserName?[0].ToString().ToUpper()
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800 dark:text-white">@review.User?.UserName</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">@review.CreatedAt.ToString("MMM dd, yyyy")</p>
+                            </div>
+                        </div>
+
+                        <div class="flex mb-4">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star @(i <= review.Rating ? "text-yellow-400" : "text-gray-300") mr-1"></i>
+                            }
+                        </div>
+
+                        <p class="text-gray-700 dark:text-gray-300 italic">
+                            "@review.Comment"
                         </p>
                     </div>
                 }
+            </div>
 
-                <!-- Navigation Buttons -->
-                <button id="prevReview"
-                        class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-full">
-                    ‹
-                </button>
-                <button id="nextReview"
-                        class="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-full">
-                    ›
-                </button>
+            <button class="carousel-nav prev" id="prevReview">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="carousel-nav next" id="nextReview">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="section-padding bg-gradient-to-r from-blue-600 to-purple-700 text-white">
+    <div class="container mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div class="stat-item">
+                <div class="text-4xl md:text-5xl font-bold mb-2">1K+</div>
+                <div class="text-blue-100">Happy Travelers</div>
+            </div>
+            <div class="stat-item">
+                <div class="text-4xl md:text-5xl font-bold mb-2">100+</div>
+                <div class="text-blue-100">Destinations</div>
+            </div>
+            <div class="stat-item">
+                <div class="text-4xl md:text-5xl font-bold mb-2">24/7</div>
+                <div class="text-blue-100">Support</div>
+            </div>
+            <div class="stat-item">
+                <div class="text-4xl md:text-5xl font-bold mb-2">5★</div>
+                <div class="text-blue-100">Rating</div>
             </div>
         </div>
-    </section>
-    <!-- Contact Section -->
-    <section id="contact" class="py-12 bg-gray-100 dark:bg-black/20">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-8">Contact Us</h2>
-            <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
-                <form>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <input type="text" placeholder="Your Name" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
-                        <input type="email" placeholder="Your Email" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
-                    </div>
-                    <textarea rows="5" placeholder="How can we help you?" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition mb-6"></textarea>
-                    <div class="text-center">
-                        <button type="submit" class="bg-blue-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                            Send Message
-                        </button>
-                    </div>
-                </form>
-            </div>
+    </div>
+</section>
+
+<section class="section-padding bg-gray-50 dark:bg-gray-900">
+    <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Stay Updated</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-8">Get the latest travel deals and destination inspiration</p>
+
+            <form asp-controller="Newsletter" asp-action="Subscribe" method="post" class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                @Html.AntiForgeryToken()
+                <input type="email" name="Email" placeholder="Enter your email"
+                       class="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent" required />
+                <button type="submit" class="btn-primary whitespace-nowrap">
+                    <i class="fas fa-paper-plane mr-2"></i>Subscribe
+                </button>
+            </form>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="mt-4 text-green-600">@TempData["SuccessMessage"]</div>
+            }
         </div>
-    </section>
-</div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Carousel functionality
+        function initializeCarousel(containerId, prevBtnId, nextBtnId, cardWidth = 336) {
+            const container = document.getElementById(containerId);
+            const prevBtn = document.getElementById(prevBtnId);
+            const nextBtn = document.getElementById(nextBtnId);
+
+            if (!container || !prevBtn || !nextBtn) return;
+
+            let scrollPosition = 0;
+
+            nextBtn.addEventListener('click', () => {
+                scrollPosition += cardWidth;
+                container.scrollTo({
+                    left: scrollPosition,
+                    behavior: 'smooth'
+                });
+            });
+
+            prevBtn.addEventListener('click', () => {
+                scrollPosition = Math.max(0, scrollPosition - cardWidth);
+                container.scrollTo({
+                    left: scrollPosition,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        // Initialize all carousels
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCarousel('hotelsContainer', 'prevHotel', 'nextHotel');
+            initializeCarousel('reviewsContainer', 'prevReview', 'nextReview');
+            initializeCarousel('flightsContainer', 'prevFlight', 'nextFlight');
+
+            // Hero slider
+            const slides = document.querySelectorAll('.hero-slider .slide');
+            let currentSlide = 0;
+
+            function showSlide(index) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                slides[index].classList.add('active');
+            }
+
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % slides.length;
+                showSlide(currentSlide);
+            }
+
+            // Rotate slides every 5 seconds
+            setInterval(nextSlide, 5000);
+
+            // Rotating words
+            const words = document.querySelectorAll('.rotating-words .word');
+            let currentWord = 0;
+
+            function rotateWords() {
+                words.forEach(word => word.classList.remove('active'));
+                words[currentWord].classList.add('active');
+                currentWord = (currentWord + 1) % words.length;
+            }
+
+            setInterval(rotateWords, 2000);
+
+            // Scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.trip-card, .hotel-card, .flight-card, .review-card').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+
+    <style>
+        /* Custom Styles */
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .hero-slider .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+            .hero-slider .slide.active {
+                opacity: 1;
+            }
+
+        .rotating-words {
+            position: relative;
+            height: 3rem;
+        }
+
+            .rotating-words .word {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                opacity: 0;
+                transform: translateY(20px);
+                transition: all 0.5s ease-in-out;
+            }
+
+                .rotating-words .word.active {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+
+        .section-padding {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #6b7280;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+            .btn-secondary:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-2px);
+            }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            border: none;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+            .carousel-nav:hover {
+                background: #667eea;
+                color: white;
+            }
+
+            .carousel-nav.prev {
+                left: -1.5rem;
+            }
+
+            .carousel-nav.next {
+                right: -1.5rem;
+            }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+            .status-badge.scheduled {
+                background: #dbeafe;
+                color: #1e40af;
+            }
+
+            .status-badge.boarding {
+                background: #fef3c7;
+                color: #d97706;
+            }
+
+            .status-badge.departed {
+                background: #fce7f3;
+                color: #be185d;
+            }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input, .form-select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+            .form-input:focus, .form-select:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                outline: none;
+            }
+
+        .stat-item {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+            .stat-item:nth-child(1) {
+                animation-delay: 0.1s;
+            }
+
+            .stat-item:nth-child(2) {
+                animation-delay: 0.2s;
+            }
+
+            .stat-item:nth-child(3) {
+                animation-delay: 0.3s;
+            }
+
+            .stat-item:nth-child(4) {
+                animation-delay: 0.4s;
+            }
+
+        @@keyframes fadeInUp {
+            to
+
+        {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        @@keyframes bounce-slow {
+            0%, 100%
+
+        {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+
+        }
+
+        .animate-bounce-slow {
+            animation: bounce-slow 3s infinite;
+        }
+
+        .animate-fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+    </style>
+}

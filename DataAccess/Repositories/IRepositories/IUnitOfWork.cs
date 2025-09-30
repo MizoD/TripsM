@@ -22,6 +22,7 @@ namespace DataAccess.Repositories.IRepositories
         ITripWishlistRepository TripWishlistRepository { get; }
         IHotelWishlistRepository HotelWishlistRepository { get; }
         IFlightWishlistRepository FlightWishlistRepository { get; }
+        ISubscriberRepository SubscriberRepository { get; }
         UserManager<ApplicationUser> UserManager { get; }
         SignInManager<ApplicationUser> SignInManager { get; }
         RoleManager<IdentityRole> RoleManager { get; }

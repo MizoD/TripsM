@@ -150,10 +150,9 @@ namespace Trips.Areas.Customer.Controllers
             }
 
             await unitOfWork.CommitAsync();
-            return RedirectToAction("Index"); // redirect to trip list
+            return RedirectToAction("Index"); 
         }
 
-        // POST: Customer/Trips/AddToWishlist
         [HttpPost]
         public async Task<IActionResult> AddToWishlist(AddToWishlistRequest request)
         {

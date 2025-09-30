@@ -15,8 +15,9 @@ namespace Trips.Areas.Customer.Controllers
         }
 
 
-        public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 6, string sortBy = "price", string sortOrder = "asc",
-                                                string? country = null, DateTime? date = null)
+        public async Task<IActionResult> Index(
+    int pageNumber = 1, int pageSize = 6, string sortBy = "price", string sortOrder = "asc",
+    string? from = null, string? country = null, DateTime? departureDate = null, DateTime? returnDate = null)
         {
             if (pageNumber < 1) pageNumber = 1;
             if (pageSize < 1) pageSize = 6;
@@ -30,14 +31,31 @@ namespace Trips.Areas.Customer.Controllers
                     .Include(f => f.Bookings)
                     .Include(f => f.Seats));
 
-            if (!string.IsNullOrWhiteSpace(country))
-                flights = flights.Where(f => f.ArrivalAirport.Country.Name.Contains(country, StringComparison.OrdinalIgnoreCase) ||
-                                             f.DepartureAirport.Country.Name.Contains(country, StringComparison.OrdinalIgnoreCase));
-
-            if (date.HasValue)
+            if (!string.IsNullOrWhiteSpace(from))
             {
-                var dayStart = date.Value.Date;
-                var dayEnd = date.Value.Date.AddDays(1).AddTicks(-1);
+                flights = flights.Where(f =>
+                    f.DepartureAirport.Country.Name.Contains(from, StringComparison.OrdinalIgnoreCase) ||
+                    f.DepartureAirport.Name.Contains(from, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(country))
+            {
+                flights = flights.Where(f =>
+                    f.ArrivalAirport.Country.Name.Contains(country, StringComparison.OrdinalIgnoreCase) ||
+                    f.ArrivalAirport.Name.Contains(country, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (departureDate.HasValue)
+            {
+                var dayStart = departureDate.Value.Date;
+                var dayEnd = departureDate.Value.Date.AddDays(7);
+                flights = flights.Where(f => f.DepartureTime >= dayStart && f.DepartureTime <= dayEnd);
+            }
+
+            if (returnDate.HasValue)
+            {
+                var dayStart = returnDate.Value.Date;
+                var dayEnd = returnDate.Value.Date.AddDays(7);
                 flights = flights.Where(f => f.DepartureTime >= dayStart && f.DepartureTime <= dayEnd);
             }
 
@@ -46,15 +64,12 @@ namespace Trips.Areas.Customer.Controllers
                 "price" => sortOrder == "desc"
                     ? flights.OrderByDescending(f => f.Price)
                     : flights.OrderBy(f => f.Price),
-
                 "date" => sortOrder == "desc"
                     ? flights.OrderByDescending(f => f.DepartureTime)
                     : flights.OrderBy(f => f.DepartureTime),
-
                 "duration" => sortOrder == "desc"
                     ? flights.OrderByDescending(f => f.Duration)
                     : flights.OrderBy(f => f.Duration),
-
                 _ => flights.OrderBy(f => f.Price)
             };
 
@@ -127,6 +142,85 @@ namespace Trips.Areas.Customer.Controllers
             return View(vm);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddToCartWithSeats(int flightId, DateTime travelDate, string coach, string selectedSeatNumbers)
+        {
+            var user = await unitOfWork.UserManager.GetUserAsync(User);
+            if (user is null)
+            {
+                string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
+                user = await unitOfWork.UserManager.FindByIdAsync(userId);
+            }
+
+            if (user == null)
+                return RedirectToAction("Login", "Account", new { area = "Identity" });
+
+            if (travelDate < DateTime.Today)
+            {
+                TempData["Error"] = "Invalid Travel Date.";
+                return RedirectToAction("Details", new { id = flightId });
+            }
+
+            var flight = await unitOfWork.FlightRepository.GetOneAsync(
+                f => f.Id == flightId,
+                includes: f => f.Include(f => f.Seats));
+
+            if (flight == null)
+                return NotFound();
+
+            var seatNumbers = selectedSeatNumbers.Split(',', StringSplitOptions.RemoveEmptyEntries);
+            var numberOfPassengers = seatNumbers.Length;
+
+            if (numberOfPassengers == 0)
+            {
+                TempData["Error"] = "Please select at least one seat.";
+                return RedirectToAction("Details", new { id = flightId });
+            }
+
+            var unavailableSeats = new List<string>();
+            foreach (var seatNumber in seatNumbers)
+            {
+                var seat = flight.Seats.FirstOrDefault(s => s.SeatLabel == seatNumber && !s.IsBooked);
+                if (seat == null)
+                {
+                    unavailableSeats.Add(seatNumber);
+                }
+            }
+
+            if (unavailableSeats.Any())
+            {
+                TempData["Error"] = $"Seats {string.Join(", ", unavailableSeats)} are no longer available.";
+                return RedirectToAction("Details", new { id = flightId });
+            }
+
+            foreach (var seatNumber in seatNumbers)
+            {
+                var cartItem = new FlightCart
+                {
+                    FlightId = flight.Id,
+                    UserId = user.Id,
+                    NumberOfPassengers = 1, 
+                    TravelDate = travelDate,
+                    Coach = Enum.Parse<Coach>(coach),
+                    SeatNumber = seatNumber,
+                    AddedAt = DateTime.UtcNow
+                };
+
+                var added = await unitOfWork.FlightCartRepository.CreateAsync(cartItem);
+                if (!added)
+                {
+                    TempData["Error"] = "Something went wrong while adding to cart.";
+                    return RedirectToAction("Details", new { id = flightId });
+                }
+
+                var seat = flight.Seats.First(s => s.SeatLabel == seatNumber);
+                seat.IsBooked = true;
+            }
+
+            await unitOfWork.CommitAsync();
+            TempData["Success"] = $"{numberOfPassengers} seat{(numberOfPassengers > 1 ? "s" : "")} added to cart successfully!";
+            return RedirectToAction("Index", "Cart");
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddToCart(int flightId, DateTime travelDate, int numberOfPassengers)

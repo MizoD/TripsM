@@ -5,175 +5,470 @@
     ViewData["Title"] = "Flight Details";
 }
 
-<div class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-xl">
-    <!-- Breadcrumb -->
-    <nav class="text-sm font-medium text-gray-500 mb-6">
-        <ol class="list-none p-0 inline-flex">
-            <li class="flex items-center">
-                <a asp-area="Customer" asp-controller="Home" asp-action="Index"
-                   class="text-blue-600 hover:text-blue-800 transition-colors">Home</a>
-                <svg class="fill-current w-3 h-3 mx-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243 1.414 1.414L12.95 10.707z" />
-                </svg>
-            </li>
-            <li class="flex items-center">
-                <a asp-area="Customer" asp-controller="Flight" asp-action="Index"
-                   class="text-blue-600 hover:text-blue-800 transition-colors">Flights</a>
-                <svg class="fill-current w-3 h-3 mx-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243 1.414 1.414L12.95 10.707z" />
-                </svg>
-            </li>
-            <li class="flex items-center">
-                <span class="text-gray-700">@Model.Flight.Title</span>
-            </li>
-        </ol>
+<div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+    <!-- Enhanced Breadcrumb -->
+    <nav class="flex items-center space-x-2 text-sm mb-8">
+        <a asp-area="Customer" asp-controller="Home" asp-action="Index"
+           class="text-blue-500 hover:text-blue-700 transition-colors duration-200 font-medium">
+            Home
+        </a>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        <a asp-area="Customer" asp-controller="Flight" asp-action="Index"
+           class="text-blue-500 hover:text-blue-700 transition-colors duration-200 font-medium">
+            Flights
+        </a>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+        <span class="text-gray-600 font-medium">@Model.Flight.Title</span>
     </nav>
 
-    <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">@Model.Flight.Title</h1>
-        <span class="text-sm px-3 py-1 rounded-full bg-gray-200">@Model.Flight.Status</span>
-    </div>
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
+            <svg class="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-green-800">@TempData["Success"]</span>
+        </div>
+    }
 
-    <!-- Flight Info -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div class="space-y-3">
-            <p><span class="font-semibold text-gray-700">From:</span> @Model.Flight.DepartureAirport?.Name</p>
-            <p><span class="font-semibold text-gray-700">To:</span> @Model.Flight.ArrivalAirport?.Name</p>
-            <p><span class="font-semibold text-gray-700">Departure:</span> @Model.Flight.DepartureTime.ToString("MMM dd, yyyy HH:mm")</p>
-            <p><span class="font-semibold text-gray-700">Arrival:</span> @Model.Flight.ArrivalTime.ToString("MMM dd, yyyy HH:mm")</p>
-            <p><span class="font-semibold text-gray-700">Duration:</span> @Model.Flight.Duration.ToString(@"hh\:mm")</p>
+    @if (TempData["Error"] != null)
+    {
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+            <svg class="w-5 h-5 text-red-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-red-800">@TempData["Error"]</span>
+        </div>
+    }
+
+    <!-- Header Section -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+        <div>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">@Model.Flight.Title</h1>
+            <div class="text-lg text-gray-700 mt-2">
+                <span class="font-medium">@Model.Flight.DepartureAirport?.Name</span>
+                <span class="mx-2 text-gray-400">→</span>
+                <span class="font-medium">@Model.Flight.ArrivalAirport?.Name</span>
+                <span class="mx-2 text-gray-400">•</span>
+                <span class="text-gray-600">@Model.Flight.DepartureTime.ToString("MMM dd, yyyy")</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="px-3 py-1 rounded-full text-sm font-medium
+                            @(Model.Flight.Status == FlightStatus.Scheduled ? "bg-green-100 text-green-800" :
+                                                    Model.Flight.Status == FlightStatus.Cancelled ? "bg-red-100 text-red-800" :
+                                                    Model.Flight.Status == FlightStatus.Delayed ? "bg-yellow-100 text-yellow-800" :
+                                                    "bg-blue-100 text-blue-800")">
+                    @Model.Flight.Status
+                </span>
+                <span class="text-gray-500">•</span>
+                <span class="text-gray-600">@($"{Model.Flight.Duration.Hours}h {Model.Flight.Duration.Minutes}m")</span>
+            </div>
         </div>
 
-        <div class="space-y-3">
-            <p><span class="font-semibold text-gray-700">Aircraft:</span> @Model.Flight.Aircraft?.Model (@Model.Flight.Aircraft?.AirlineName)</p>
-            <p><span class="font-semibold text-gray-700">Trip:</span> @(Model.Flight.Trip?.Title ?? "N/A")</p>
-            <p><span class="font-semibold text-gray-700">Total Seats:</span> @Model.Flight.TotalSeats</p>
-            <p><span class="font-semibold text-gray-700">Available Seats:</span> @Model.Flight.AvailableSeats</p>
-            <p><span class="font-semibold text-gray-700">Booked Seats:</span> @Model.Flight.BookedSeats</p>
+        <!-- Quick Actions -->
+        <div class="mt-4 lg:mt-0 flex space-x-3">
+            <div class="text-right">
+                <p class="text-2xl font-bold text-gray-900">From $@Model.Flight.GetPriceForCoach(Coach.Economy)</p>
+                <p class="text-sm text-gray-500">@Model.AvailableSeats seats available</p>
+            </div>
         </div>
     </div>
 
-    <!-- Pricing Section -->
-    <div class="bg-gray-50 border rounded-lg p-4 mb-6">
-        <h2 class="text-lg font-semibold mb-3">Pricing</h2>
-        <ul class="space-y-2">
-            <li>Economy: <b>$@Model.Flight.GetPriceForCoach(Models.Coach.Economy)</b></li>
-            <li>Business: <b>$@Model.Flight.GetPriceForCoach(Models.Coach.Business)</b></li>
-            <li>First Class: <b>$@Model.Flight.GetPriceForCoach(Models.Coach.FirstClass)</b></li>
-        </ul>
+    <!-- Flight Route Card -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-8 border border-blue-100">
+        <div class="flex flex-col lg:flex-row items-center justify-between">
+            <!-- Departure -->
+            <div class="text-center lg:text-left mb-6 lg:mb-0">
+                <div class="text-2xl font-bold text-gray-900">@Model.Flight.DepartureAirport?.Name</div>
+                <div class="text-lg text-gray-600">@Model.Flight.DepartureTime.ToString("MMM dd, yyyy")</div>
+                <div class="text-3xl font-bold text-blue-600">@Model.Flight.DepartureTime.ToString("HH:mm")</div>
+            </div>
+
+            <!-- Flight Path -->
+            <div class="flex items-center justify-center my-4 lg:my-0">
+                <div class="relative">
+                    <div class="w-32 lg:w-48 h-1 bg-blue-300 rounded-full"></div>
+                    <div class="absolute -top-2 left-1/2 transform -translate-x-1/2">
+                        <svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arrival -->
+            <div class="text-center lg:text-right">
+                <div class="text-2xl font-bold text-gray-900">@Model.Flight.ArrivalAirport?.Name</div>
+                <div class="text-lg text-gray-600">@Model.Flight.ArrivalTime.ToString("MMM dd, yyyy")</div>
+                <div class="text-3xl font-bold text-blue-600">@Model.Flight.ArrivalTime.ToString("HH:mm")</div>
+            </div>
+        </div>
     </div>
 
-    <!-- Seats Section -->
-    <div class="bg-gray-50 border rounded-lg p-4 mb-6">
-        <h2 class="text-lg font-semibold mb-3">Seats Overview</h2>
-        @if (Model.Flight.Seats != null && Model.Flight.Seats.Any())
-        {
-            <table class="w-full border-collapse">
-                <thead>
-                    <tr class="bg-gray-100 text-left">
-                        <th class="px-3 py-2 border">Seat Number</th>
-                        <th class="px-3 py-2 border">Coach</th>
-                        <th class="px-3 py-2 border">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var seat in Model.Flight.Seats)
-                    {
-                        <tr>
-                            <td class="px-3 py-2 border">@seat.SeatLabel</td>
-                            <td class="px-3 py-2 border">@seat.Coach</td>
-                            <td class="px-3 py-2 border">
-                                @if (seat.IsBooked)
-                                {
-                                    <span class="text-red-600 font-semibold">Booked</span>
-                                }
-                                else
-                                {
-                                    <span class="text-green-600 font-semibold">Available</span>
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <p class="text-gray-500">No seats data available.</p>
-        }
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left Column - Flight Info & Pricing -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Flight Details Card -->
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Flight Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Aircraft:</span>
+                            <span class="text-gray-900">@Model.Flight.Aircraft?.Model</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Airline:</span>
+                            <span class="text-gray-900">@Model.Flight.Aircraft?.AirlineName</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Trip:</span>
+                            <span class="text-gray-900">@(Model.Flight.Trip?.Title ?? "N/A")</span>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Total Seats:</span>
+                            <span class="text-gray-900">@Model.TotalSeats</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Available:</span>
+                            <span class="text-green-600 font-medium">@Model.AvailableSeats</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Booked:</span>
+                            <span class="text-red-600 font-medium">@Model.BookedSeats</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing Card -->
+            <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Pricing</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="text-center p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 transition-colors">
+                        <h3 class="font-semibold text-gray-900 mb-2">Economy</h3>
+                        <div class="text-2xl font-bold text-gray-900">$@Model.Flight.GetPriceForCoach(Coach.Economy)</div>
+                        <p class="text-sm text-gray-500 mt-1">Standard comfort</p>
+                    </div>
+                    <div class="text-center p-4 border-2 border-blue-500 rounded-lg bg-blue-50">
+                        <h3 class="font-semibold text-gray-900 mb-2">Business</h3>
+                        <div class="text-2xl font-bold text-gray-900">$@Model.Flight.GetPriceForCoach(Coach.Business)</div>
+                        <p class="text-sm text-gray-500 mt-1">Extra space & comfort</p>
+                    </div>
+                    <div class="text-center p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 transition-colors">
+                        <h3 class="font-semibold text-gray-900 mb-2">First Class</h3>
+                        <div class="text-2xl font-bold text-gray-900">$@Model.Flight.GetPriceForCoach(Coach.FirstClass)</div>
+                        <p class="text-sm text-gray-500 mt-1">Luxury experience</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Booking Card -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-lg sticky top-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Book Your Flight</h2>
+
+                <!-- Seat Selection Form -->
+                <form id="seatSelectionForm" method="post" asp-action="AddToCartWithSeats">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="flightId" value="@Model.Flight.Id" />
+
+                    <!-- Travel Date -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Travel Date</label>
+                        <input type="date" name="travelDate"
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               value="@Model.Flight.DepartureTime.ToString("yyyy-MM-dd")"
+                               class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                               required />
+                    </div>
+
+                    <!-- Route Info -->
+                    <div class="mb-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <p class="text-sm text-gray-600">Route</p>
+                        <p class="font-medium text-gray-900">
+                            @Model.Flight.DepartureAirport?.Name → @Model.Flight.ArrivalAirport?.Name
+                        </p>
+                        <p class="text-sm text-gray-600 mt-1">
+                            Departure: <span class="font-medium">@Model.Flight.DepartureTime.ToString("MMM dd, yyyy HH:mm")</span>
+                        </p>
+                    </div>
+
+                    <!-- Selected Seats Display -->
+                    <div id="selectedSeatsContainer" class="mb-4 hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Selected Seats</label>
+                        <div id="selectedSeatsDisplay" class="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg min-h-12">
+                            <!-- Selected seats will appear here -->
+                        </div>
+                        <input type="hidden" name="selectedSeatNumbers" id="selectedSeatNumbers" />
+                    </div>
+
+                    <!-- Coach Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Class</label>
+                        <select name="coach" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200">
+                            <option value="Economy">Economy</option>
+                            <option value="Business">Business</option>
+                            <option value="FirstClass">First Class</option>
+                        </select>
+                    </div>
+
+                    <!-- Total Price Display -->
+                    <div id="totalPriceSection" class="mb-4 p-4 bg-blue-50 rounded-lg hidden">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium text-gray-700">Total Price:</span>
+                            <span id="totalPrice" class="text-2xl font-bold text-blue-600">$0</span>
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1" id="seatCount">0 seats selected</div>
+                        <div class="text-xs text-gray-400 mt-1">
+                            @Model.Flight.DepartureAirport?.Name → @Model.Flight.ArrivalAirport?.Name • @Model.Flight.DepartureTime.ToString("MMM dd, yyyy")
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button type="button" id="selectSeatsBtn"
+                                class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transform hover:scale-105 transition-all duration-200 shadow-sm">
+                            Select Seats
+                        </button>
+
+                        <button type="submit" id="addToCartBtn"
+                                class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transform hover:scale-105 transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hidden">
+                            Add to Cart (@Model.Flight.DepartureTime.ToString("MMM dd"))
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Seat Map Section -->
-    <div class="mt-10 p-6 bg-gray-100 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Seat Map</h2>
-
-        <div class="grid grid-cols-6 gap-3 justify-center">
-            @foreach (var seat in Model.Seats)
-            {
-                <div class="
-                    flex items-center justify-center w-12 h-12 rounded-md cursor-pointer
-                    @(seat.IsBooked
-                                         ? "bg-red-500 text-white cursor-not-allowed"
-                                         : "bg-green-500 text-white hover:bg-green-600")"
-                 title="Seat: @seat.SeatLabel (@(seat.IsBooked ? "Booked" : "Available"))">
-                @seat.SeatLabel
-            </div>
-                        }
+    <div id="seatMapSection" class="mt-8 bg-white rounded-xl p-6 border border-gray-200 shadow-sm hidden">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-900">Select Your Seats</h2>
+            <button type="button" id="closeSeatMap" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
-        <!-- Legend -->
-        <div class="flex justify-center mt-6 space-x-6 text-sm">
-            <div class="flex items-center space-x-2">
-                <div class="w-5 h-5 bg-green-500 rounded"></div>
-                <span>Available</span>
+        <!-- Seat Map Controls -->
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 bg-green-500 rounded"></div>
+                    <span class="text-sm">Available</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 bg-red-500 rounded"></div>
+                    <span class="text-sm">Booked</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 bg-blue-500 rounded border-2 border-blue-300"></div>
+                    <span class="text-sm">Selected</span>
+                </div>
             </div>
-            <div class="flex items-center space-x-2">
-                <div class="w-5 h-5 bg-red-500 rounded"></div>
-                <span>Booked</span>
+            <div class="text-sm text-gray-600">
+                <kbd class="px-2 py-1 bg-gray-100 rounded">Ctrl</kbd> + Click to select multiple seats
             </div>
         </div>
-    </div>
 
-    <!-- Book Button -->
-    <div class="mt-6">
-        <a asp-area="Customer" asp-controller="Booking" asp-action="Create" asp-route-flightId="@Model.Flight.Id"
-           class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition">
-            Book This Flight
-        </a>
-    </div>
+        <!-- Aircraft Layout -->
+        <div class="bg-gray-100 rounded-lg p-6 mb-4">
+            <div class="text-center text-sm text-gray-600 mb-4">Front of Aircraft</div>
 
-    <!-- Related Flights -->
-    <div class="mt-10">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">Related Flights</h2>
-
-        @if (Model.RelatedFlights.Any())
-        {
-            <div class="grid md:grid-cols-2 gap-4">
-                @foreach (var related in Model.RelatedFlights)
+            <!-- Seat Map Grid -->
+            <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 justify-center max-w-4xl mx-auto">
+                @foreach (var seat in Model.Seats)
                 {
-                    <div class="border rounded-lg p-4 shadow hover:shadow-md transition">
-                        <h3 class="text-lg font-semibold text-gray-800">@related.Title</h3>
-                        <p class="text-gray-600 text-sm">
-                            From: <b>@related.DepartureAirport?.Name</b> → To: <b>@related.ArrivalAirport?.Name</b>
-                        </p>
-                        <p class="text-gray-600 text-sm">
-                            Departure: @related.DepartureTime.ToString("MMM dd, yyyy HH:mm")
-                        </p>
-                        <p class="text-gray-900 font-bold mt-2">
-                            Price: $@related.Price
-                        </p>
-                        <a asp-area="Customer" asp-controller="Flight" asp-action="Details" asp-route-id="@related.Id"
-                           class="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                            View Details
-                        </a>
+                    <div class="seat-item relative" data-seat-id="@seat.Id" data-seat-number="@seat.SeatLabel"
+                         data-coach="@seat.Coach" data-price="@Model.Flight.GetPriceForCoach(seat.Coach)"
+                         data-is-booked="@seat.IsBooked.ToString().ToLower()">
+                        <div class="w-12 h-12 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all duration-200 transform hover:scale-110
+                                        @(seat.IsBooked ? "bg-red-500 text-white cursor-not-allowed" : "bg-green-500 text-white hover:bg-green-600 seat-available")"
+                             title="Seat @seat.SeatLabel - @seat.Coach - @(seat.IsBooked ? "Booked" : "Available") - $@Model.Flight.GetPriceForCoach(seat.Coach)">
+                            <span class="text-xs font-medium">@seat.SeatLabel</span>
+                            <span class="text-xs opacity-75">$@Model.Flight.GetPriceForCoach(seat.Coach)</span>
+                        </div>
                     </div>
                 }
             </div>
-        }
-        else
-        {
-            <p class="text-gray-500">No related flights available.</p>
-        }
+
+            <div class="text-center text-sm text-gray-600 mt-4">Back of Aircraft</div>
+        </div>
+
+        <!-- Seat Selection Actions -->
+        <div class="flex justify-between items-center mt-6">
+            <div id="selectionSummary" class="text-sm text-gray-600">
+                <span id="selectedCount">0</span> seats selected • Total: $<span id="selectionTotal">0</span>
+            </div>
+            <div class="space-x-3">
+                <button type="button" id="clearSelection" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+                    Clear Selection
+                </button>
+                <button type="button" id="confirmSeats"
+                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled>
+                    Confirm Seats
+                </button>
+            </div>
+        </div>
     </div>
+
+    <!-- Related Flights -->
+    @if (Model.RelatedFlights.Any())
+    {
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Related Flights</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach (var related in Model.RelatedFlights)
+                {
+                    <div class="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-300 group">
+                        <h3 class="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors mb-2">@related.Title</h3>
+                        <p class="text-gray-600 text-sm mb-2">
+                            @related.DepartureAirport?.Name → @related.ArrivalAirport?.Name
+                        </p>
+                        <p class="text-gray-500 text-sm mb-3">
+                            @related.DepartureTime.ToString("MMM dd, HH:mm")
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xl font-bold text-gray-900">$@related.Price</span>
+                            <a asp-area="Customer" asp-controller="Flight" asp-action="Details" asp-route-id="@related.Id"
+                               class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectedSeats = new Map();
+            let isCtrlPressed = false;
+
+            // Keyboard events for multi-select
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Control') isCtrlPressed = true;
+            });
+
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'Control') isCtrlPressed = false;
+            });
+
+            // Toggle seat map
+            document.getElementById('selectSeatsBtn').addEventListener('click', function() {
+                document.getElementById('seatMapSection').classList.remove('hidden');
+                this.classList.add('hidden');
+            });
+
+            document.getElementById('closeSeatMap').addEventListener('click', function() {
+                document.getElementById('seatMapSection').classList.add('hidden');
+                document.getElementById('selectSeatsBtn').classList.remove('hidden');
+            });
+
+            // Seat selection logic
+            document.querySelectorAll('.seat-available').forEach(seatElement => {
+                seatElement.addEventListener('click', function() {
+                    const seatItem = this.closest('.seat-item');
+                    const seatId = seatItem.dataset.seatId;
+                    const seatNumber = seatItem.dataset.seatNumber;
+                    const coach = seatItem.dataset.coach;
+                    const price = parseFloat(seatItem.dataset.price);
+                    const isBooked = seatItem.dataset.isBooked === 'true';
+
+                    if (isBooked) return;
+
+                    if (selectedSeats.has(seatId)) {
+                        // Deselect seat
+                        selectedSeats.delete(seatId);
+                        this.classList.remove('bg-blue-500', 'border-2', 'border-blue-300');
+                        this.classList.add('bg-green-500', 'hover:bg-green-600');
+                    } else {
+                        if (!isCtrlPressed && selectedSeats.size > 0) {
+                            // Single selection mode - clear previous selection
+                            clearSeatSelection();
+                        }
+
+                        // Select seat
+                        selectedSeats.set(seatId, { number: seatNumber, coach: coach, price: price });
+                        this.classList.remove('bg-green-500', 'hover:bg-green-600');
+                        this.classList.add('bg-blue-500', 'border-2', 'border-blue-300');
+                    }
+
+                    updateSelectionUI();
+                });
+            });
+
+            // Clear selection
+            document.getElementById('clearSelection').addEventListener('click', clearSeatSelection);
+
+            // Confirm seats
+            document.getElementById('confirmSeats').addEventListener('click', function() {
+                if (selectedSeats.size === 0) return;
+
+                // Update the form with selected seats
+                const seatNumbers = Array.from(selectedSeats.values()).map(seat => seat.number);
+                document.getElementById('selectedSeatNumbers').value = seatNumbers.join(',');
+
+                // Update display
+                const selectedSeatsDisplay = document.getElementById('selectedSeatsDisplay');
+                selectedSeatsDisplay.innerHTML = seatNumbers.map(number =>
+                    `<span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">${number}</span>`
+                ).join('');
+
+                // Show selected seats container and update price
+                document.getElementById('selectedSeatsContainer').classList.remove('hidden');
+                document.getElementById('addToCartBtn').classList.remove('hidden');
+
+                // Close seat map
+                document.getElementById('seatMapSection').classList.add('hidden');
+                document.getElementById('selectSeatsBtn').classList.remove('hidden');
+            });
+
+            function clearSeatSelection() {
+                selectedSeats.clear();
+                document.querySelectorAll('.seat-available').forEach(seat => {
+                    seat.classList.remove('bg-blue-500', 'border-2', 'border-blue-300');
+                    seat.classList.add('bg-green-500', 'hover:bg-green-600');
+                });
+                updateSelectionUI();
+            }
+
+            function updateSelectionUI() {
+                const selectedCount = selectedSeats.size;
+                const totalPrice = Array.from(selectedSeats.values()).reduce((sum, seat) => sum + seat.price, 0);
+
+                document.getElementById('selectedCount').textContent = selectedCount;
+                document.getElementById('selectionTotal').textContent = totalPrice.toFixed(2);
+                document.getElementById('seatCount').textContent = `${selectedCount} seat${selectedCount !== 1 ? 's' : ''} selected`;
+                document.getElementById('totalPrice').textContent = `$${totalPrice.toFixed(2)}`;
+
+                // Show/hide total price section
+                const totalPriceSection = document.getElementById('totalPriceSection');
+                if (selectedCount > 0) {
+                    totalPriceSection.classList.remove('hidden');
+                } else {
+                    totalPriceSection.classList.add('hidden');
+                }
+
+                // Enable/disable confirm button
+                document.getElementById('confirmSeats').disabled = selectedCount === 0;
+            }
+        });
+    </script>
+}

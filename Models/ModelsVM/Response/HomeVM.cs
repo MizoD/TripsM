@@ -12,5 +12,7 @@ namespace Models.ModelsVM.Response
         public List<string> HotelsName { get; set; } = new();
         public List<Review> Reviews { get; set; } = new();
         public List<Hotel> Hotels { get; set; } = new();
+        public List<Trip> FeaturedTrips { get; set; } = new();
+        public List<Flight> UpcomingFlights { get; set; } = new();
     }
 }

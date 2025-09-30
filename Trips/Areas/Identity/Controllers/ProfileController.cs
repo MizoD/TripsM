@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -204,9 +205,9 @@ namespace Trips.Areas.Identity.Controllers
             }
             if (user == null) return Unauthorized();
 
-            var myTripsWishlist = (await unitOfWork.TripWishlistRepository.GetAsync(t => t.UserId == user.Id)).ToList();
-            var myFlightsWishlist = (await unitOfWork.FlightWishlistRepository.GetAsync(f => f.UserId == user.Id)).ToList();
-            var myHotelsWishlist = (await unitOfWork.HotelWishlistRepository.GetAsync(h => h.UserId == user.Id)).ToList();
+            var myTripsWishlist = (await unitOfWork.TripWishlistRepository.GetAsync(t => t.UserId == user.Id, includes: q=> q.Include(t=> t.Trip).ThenInclude(t=> t.Country))).ToList();
+            var myFlightsWishlist = (await unitOfWork.FlightWishlistRepository.GetAsync(f => f.UserId == user.Id, includes: q => q.Include(f => f.Flight))).ToList();
+            var myHotelsWishlist = (await unitOfWork.HotelWishlistRepository.GetAsync(h => h.UserId == user.Id, includes: q => q.Include(h=> h.Hotel))).ToList();
 
             if ((myTripsWishlist == null || !myTripsWishlist.Any()) &&
                 (myFlightsWishlist == null || !myFlightsWishlist.Any()) &&
